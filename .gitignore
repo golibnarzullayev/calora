@@ -1,0 +1,56 @@
+# Dependencies
+backend/node_modules/
+frontend/node_modules/
+
+# Environment variables
+backend/.env
+frontend/.env
+
+# Build outputs
+backend/dist/
+frontend/dist/
+*.tsbuildinfo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+backend/logs/
+frontend/logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+backend/pids/
+frontend/pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage
+backend/coverage/
+frontend/coverage/
+.nyc_output/
+
+# Uploads
+backend/uploads/
+frontend/uploads/
+
+# Docker
+.dockerignore
+
+# OS
+backend/Thumbs.db
+backend/.DS_Store
+frontend/Thumbs.db
+frontend/.DS_Store
+
+# Testing
+.mocha_output
