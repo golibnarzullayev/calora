@@ -50,7 +50,7 @@ export const MealDetail: React.FC<MealDetailProps> = ({
   const fatPercent = (meal.aiResult.fat / macroTotal) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 pb-20">
+    <div className="h-screen bg-gradient-to-br from-orange-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 overflow-y-auto flex flex-col">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="p-4 flex items-center gap-3 max-w-2xl mx-auto">

@@ -109,7 +109,7 @@ export const App: React.FC = () => {
 
   if (isCheckingAuth || isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-500 to-blue-600 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+      <div className="h-screen bg-gradient-to-b from-blue-500 to-blue-600 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center overflow-hidden">
         <div className="text-white text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
           <p>Yuklanmoqda...</p>
@@ -134,7 +134,7 @@ export const App: React.FC = () => {
 
   return (
     <div
-      className="min-h-screen bg-white"
+      className="h-screen bg-white overflow-hidden flex flex-col"
       onTouchStart={(e) => setTouchStart(e.changedTouches[0].clientX)}
       onTouchEnd={(e) => setTouchEnd(e.changedTouches[0].clientX)}
     >
