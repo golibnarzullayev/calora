@@ -11,11 +11,7 @@ import { setupTelegramBot } from "./telegram/bot.js";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(
-  cors({
-    origin: process.env.CORS_ORIGIN?.split(",") || "*",
-  }),
-);
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
