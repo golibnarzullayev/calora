@@ -71,6 +71,9 @@ export const App: React.FC = () => {
         const id = getTelegramUserId();
         if (id) {
           setTelegramId(id);
+          // For Telegram users, skip onboarding and go directly to dashboard
+          setOnboarded(true);
+          return;
         }
       } finally {
         setIsCheckingAuth(false);
