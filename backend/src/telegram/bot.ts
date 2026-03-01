@@ -24,7 +24,7 @@ export function setupTelegramBot() {
 
   bot.help((ctx) => {
     ctx.reply(
-      `Kalori kuzatish ilovasiga xush kelibsiz!
+      `Kaloriya hisoblagich ilovasiga xush kelibsiz!
 
 Quyidagi buyruqlardan foydalaning:
 /start - Ilovani boshlash
