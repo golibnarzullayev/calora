@@ -20,6 +20,7 @@
     "react-phone-number-input": "^3.4.5",
     "react-router-dom": "^6.20.0",
     "recharts": "^2.10.3",
+    "vite-plugin-pwa": "^1.2.0",
     "zustand": "^4.4.1"
   },
   "devDependencies": {

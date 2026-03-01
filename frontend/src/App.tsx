@@ -11,7 +11,6 @@ import { Navigation } from "./components/Navigation";
 import { ToastContainer } from "./components/Toast";
 import { useUser, useCalorieTarget } from "./hooks/useQueries";
 import { useToast } from "./hooks/useToast";
-import { usePWA } from "./hooks/usePWA";
 import { authAPI } from "./services/api";
 import type { Meal } from "./store/useAppStore";
 
@@ -24,7 +23,6 @@ export const App: React.FC = () => {
     setOnboarded,
   } = useAppStore();
   const { toasts, removeToast } = useToast();
-  usePWA();
   const [telegramId, setTelegramId] = useState<string | null>(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [currentPage, setCurrentPage] = useState<
