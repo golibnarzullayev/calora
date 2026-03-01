@@ -8,7 +8,7 @@ export function setupTelegramBot() {
     const webAppUrl = process.env.TELEGRAM_WEBAPP_URL;
     const userId = ctx.from?.id;
 
-    ctx.reply("Xush kelibsiz! Kalori kuzatish ilovasiga.", {
+    ctx.reply("Xush kelibsiz! Kaloriya hisoblagich ilovasiga.", {
       reply_markup: {
         inline_keyboard: [
           [
