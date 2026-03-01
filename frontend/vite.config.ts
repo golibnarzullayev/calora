@@ -7,11 +7,11 @@ export default defineConfig({
     port: 5173,
     proxy: {
       "/api": {
-        target: "http://localhost:3000",
+        target: "https://calora-api.gignite.uz",
         changeOrigin: true,
       },
     },
-    allowedHosts: ["grow-effect-poem-procedure.trycloudflare.com"],
+    allowedHosts: ["calora.gignite.uz"],
     headers: {
       "Service-Worker-Allowed": "/",
     },
