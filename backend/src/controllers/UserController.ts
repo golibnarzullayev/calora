@@ -18,6 +18,7 @@ export class UserController {
       } = req.body;
 
       let user = await User.findOne({ telegramId });
+      let userWithPhoneNumber = await User.findOne({ phoneNumber });
 
       if (user) {
         user.firstName = firstName;
@@ -29,9 +30,9 @@ export class UserController {
         user.workoutFrequency = workoutFrequency;
         user.goal = goal;
         await user.save();
-      } else {
+      } else if (!user && !userWithPhoneNumber) {
         user = new User({
-          telegramId: telegramId ? telegramId : Math.random().toString(),
+          telegramId: telegramId,
           firstName,
           lastName,
           phoneNumber,
@@ -41,6 +42,10 @@ export class UserController {
           workoutFrequency,
           goal,
         });
+        await user.save();
+      } else if (!user && userWithPhoneNumber) {
+        user = userWithPhoneNumber;
+        user.telegramId = telegramId;
         await user.save();
       }
 
@@ -53,7 +58,7 @@ export class UserController {
       });
 
       res.json({
-        user: user.toObject(),
+        user: user?.toObject(),
         calorieTarget: calorieResult,
       });
     } catch (error) {
