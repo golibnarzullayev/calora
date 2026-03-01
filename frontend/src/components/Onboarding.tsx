@@ -165,15 +165,15 @@ export const Onboarding: React.FC<{ telegramId: string | null }> = ({
   const currentStep = steps[step];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-500 to-purple-600 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col items-center justify-center p-4 relative overflow-y-auto">
+    <div className="h-screen bg-gradient-to-br from-blue-600 via-blue-500 to-purple-600 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col items-center justify-center px-4 py-2 relative overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-white opacity-5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 animate-pulse"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-white opacity-5 rounded-full blur-3xl translate-x-1/2 translate-y-1/2 animate-pulse"></div>
 
-      <div className="w-full max-w-sm relative z-10 my-auto">
+      <div className="w-full max-w-sm relative z-10">
         {/* Progress indicator */}
-        <div className="mb-5">
-          <div className="flex justify-center gap-1.5 mb-3">
+        <div className="mb-4">
+          <div className="flex justify-center gap-1.5 mb-2">
             {steps.map((_, index) => (
               <div
                 key={index}
@@ -188,7 +188,7 @@ export const Onboarding: React.FC<{ telegramId: string | null }> = ({
             ))}
           </div>
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-white mb-0.5">
+            <h1 className="text-xl font-bold text-white mb-0.5">
               {isWebUser && isLoginMode ? "Kirish" : UZ.onboarding.welcome}
             </h1>
             <p className="text-blue-100 text-xs">
@@ -198,7 +198,7 @@ export const Onboarding: React.FC<{ telegramId: string | null }> = ({
         </div>
 
         {/* Main card with enhanced styling */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-2xl backdrop-blur-sm border border-white dark:border-gray-700 border-opacity-20 animate-slide-up">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-2xl backdrop-blur-sm border border-white dark:border-gray-700 border-opacity-20 animate-slide-up">
           {error && (
             <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg text-sm">
               {error}
@@ -490,34 +490,34 @@ export const Onboarding: React.FC<{ telegramId: string | null }> = ({
             </div>
           )}
 
-          <div className="flex gap-3">
+          <div className="flex gap-3 mt-4">
             <button
               onClick={handleBack}
               disabled={step === 0}
-              className="flex-1 mt-5 bg-gray-300 hover:bg-gray-400 disabled:bg-gray-200 disabled:text-gray-400 text-gray-800 font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all transform hover:scale-105 active:scale-95 shadow-lg text-base"
+              className="flex-1 bg-gray-300 hover:bg-gray-400 disabled:bg-gray-200 disabled:text-gray-400 text-gray-800 font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all transform hover:scale-105 active:scale-95 shadow-lg text-sm"
             >
-              <ChevronLeft size={20} />
+              <ChevronLeft size={18} />
               {UZ.onboarding.back || "Orqaga"}
             </button>
             <button
               onClick={handleNext}
               disabled={loading}
-              className="flex-1 mt-5 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all transform hover:scale-105 active:scale-95 shadow-lg text-base"
+              className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all transform hover:scale-105 active:scale-95 shadow-lg text-sm"
             >
               {step === steps.length - 1 ? (
                 <>🎉 {UZ.onboarding.finish}</>
               ) : (
                 <>
                   {UZ.onboarding.next}
-                  <ChevronRight size={20} />
+                  <ChevronRight size={18} />
                 </>
               )}
             </button>
           </div>
 
           {isWebUser && step === 0 && (
-            <div className="mt-6 text-center border-t border-gray-200 dark:border-gray-700 pt-4">
-              <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">
+            <div className="mt-3 text-center border-t border-gray-200 dark:border-gray-700 pt-3">
+              <p className="text-gray-600 dark:text-gray-400 text-xs mb-2">
                 {isLoginMode
                   ? "Akkauntingiz yo'qmi?"
                   : "Allaqachon akkauntingiz bormi?"}
@@ -528,7 +528,7 @@ export const Onboarding: React.FC<{ telegramId: string | null }> = ({
                   setStep(0);
                   setError("");
                 }}
-                className="text-blue-600 dark:text-blue-400 font-semibold hover:underline text-sm"
+                className="text-blue-600 dark:text-blue-400 font-semibold hover:underline text-xs"
               >
                 {isLoginMode ? "Ro'yxatdan o'tish" : "Kirish"}
               </button>
