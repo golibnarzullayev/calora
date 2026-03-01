@@ -1,6 +1,6 @@
 import { Router } from "express";
 import multer from "multer";
-import { MealController } from "../controllers/MealController";
+import { MealController } from "../controllers/MealController.js";
 
 const upload = multer({ dest: "uploads/" });
 

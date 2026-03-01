@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { Meal } from "../models/Meal";
-import { DailyStats } from "../models/DailyStats";
-import { User } from "../models/User";
-import { GeminiService } from "../services/GeminiService";
-import { R2Service } from "../services/R2Service";
+import { Meal } from "../models/Meal.js";
+import { DailyStats } from "../models/DailyStats.js";
+import { User } from "../models/User.js";
+import { GeminiService } from "../services/GeminiService.js";
+import { R2Service } from "../services/R2Service.js";
 import mongoose from "mongoose";
 
 export class MealController {

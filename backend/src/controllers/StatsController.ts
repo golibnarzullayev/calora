@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { DailyStats } from "../models/DailyStats";
-import { Weight } from "../models/Weight";
-import { User } from "../models/User";
+import { DailyStats } from "../models/DailyStats.js";
+import { Weight } from "../models/Weight.js";
+import { User } from "../models/User.js";
 
 export class StatsController {
   static async getDailyStats(req: Request, res: Response) {

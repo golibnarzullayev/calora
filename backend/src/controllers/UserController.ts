@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { User } from "../models/User";
-import { CalorieCalculator } from "../services/CalorieCalculator";
+import { User } from "../models/User.js";
+import { CalorieCalculator } from "../services/CalorieCalculator.js";
 
 export class UserController {
   static async createOrUpdateUser(req: Request, res: Response) {

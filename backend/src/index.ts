@@ -1,12 +1,12 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { connectDatabase } from "./config/database";
-import authRoutes from "./routes/authRoutes";
-import userRoutes from "./routes/userRoutes";
-import mealRoutes from "./routes/mealRoutes";
-import statsRoutes from "./routes/statsRoutes";
-import { setupTelegramBot } from "./telegram/bot";
+import { connectDatabase } from "./config/database.js";
+import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import mealRoutes from "./routes/mealRoutes.js";
+import statsRoutes from "./routes/statsRoutes.js";
+import { setupTelegramBot } from "./telegram/bot.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
