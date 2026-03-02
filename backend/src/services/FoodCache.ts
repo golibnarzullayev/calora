@@ -1,6 +1,6 @@
 // FoodCache.ts
-import { redis } from "./Redis";
-import { FoodDetectionResult } from "./GeminiService";
+import { redis } from "./Redis.js";
+import { FoodDetectionResult } from "./GeminiService.js";
 
 export class FoodCache {
   private prefix = "food_hash:";
