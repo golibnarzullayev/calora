@@ -198,19 +198,19 @@ export const Onboarding: React.FC<{ telegramId: string | null }> = ({
         </div>
 
         {/* Main card with enhanced styling */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-2xl backdrop-blur-sm border border-white dark:border-gray-700 border-opacity-20 animate-slide-up">
+        <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-2xl backdrop-blur-sm border border-white dark:border-gray-700 border-opacity-20 animate-slide-up">
           {error && (
-            <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg text-sm">
+            <div className="mb-6 p-4 bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl text-base">
               {error}
             </div>
           )}
 
-          <label className="block text-base font-bold text-gray-800 dark:text-white mb-4">
+          <label className="block text-2xl font-bold text-gray-800 dark:text-white mb-6">
             {currentStep.label}
           </label>
 
           {currentStep.type === "text" && (
-            <div className="space-y-2">
+            <div className="space-y-3">
               <input
                 type="text"
                 value={formData[currentStep.key as keyof typeof formData]}
@@ -223,14 +223,14 @@ export const Onboarding: React.FC<{ telegramId: string | null }> = ({
                   }
                 }}
                 placeholder={currentStep.label}
-                className="w-full px-4 py-3 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 border-2 border-gray-200 dark:border-gray-600 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm font-medium transition-all"
+                className="w-full px-6 py-4 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 border-2 border-gray-200 dark:border-gray-600 dark:text-white rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg font-medium transition-all"
                 autoFocus
               />
             </div>
           )}
 
           {currentStep.type === "password" && (
-            <div className="space-y-2">
+            <div className="space-y-3">
               <input
                 type="password"
                 value={formData[currentStep.key as keyof typeof formData]}
@@ -243,27 +243,27 @@ export const Onboarding: React.FC<{ telegramId: string | null }> = ({
                   }
                 }}
                 placeholder={currentStep.label}
-                className="w-full px-4 py-3 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 border-2 border-gray-200 dark:border-gray-600 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm font-medium transition-all"
+                className="w-full px-6 py-4 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 border-2 border-gray-200 dark:border-gray-600 dark:text-white rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg font-medium transition-all"
                 autoFocus
               />
             </div>
           )}
 
           {currentStep.type === "tel" && (
-            <div className="space-y-2">
+            <div className="space-y-3">
               <PhoneInput
                 value={formData[currentStep.key as keyof typeof formData]}
                 onChange={(value) => handleInputChange(currentStep.key, value)}
                 placeholder="+998 (XX) XXX-XX-XX"
-                className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 border-2 border-gray-200 dark:border-gray-600 text-sm font-medium"
+                className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 border-2 border-gray-200 dark:border-gray-600 text-lg font-medium"
               />
             </div>
           )}
 
           {currentStep.type === "number" && (
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div
-                className="flex-1 text-center bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-2xl py-6 px-4 cursor-grab active:cursor-grabbing select-none overflow-hidden relative"
+                className="flex-1 text-center bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-3xl py-10 px-6 cursor-grab active:cursor-grabbing select-none overflow-hidden relative"
                 onWheel={(e: React.WheelEvent<HTMLDivElement>) => {
                   const now = Date.now();
                   if (now - lastSwipeTime < 500) return;
@@ -378,12 +378,17 @@ export const Onboarding: React.FC<{ telegramId: string | null }> = ({
                 </div>
 
                 {/* Current value - highlighted */}
-                <div className="text-5xl font-black text-blue-600 mb-1 transition-all">
+                <div className="text-6xl font-black text-blue-600 dark:text-blue-400 mb-3">
                   {formData[currentStep.key as keyof typeof formData]}
                 </div>
+                <p className="text-base text-gray-600 dark:text-gray-400 font-medium">
+                  {currentStep.key === "age" && "Yoshingiz"}
+                  {currentStep.key === "weight" && "kg"}
+                  {currentStep.key === "height" && "cm"}
+                </p>
 
                 {/* Bottom faded value */}
-                <div className="text-2xl font-bold text-gray-400 opacity-40 transition-all">
+                <div className="text-3xl font-bold text-gray-400 opacity-40 transition-all">
                   {parseInt(
                     formData[
                       currentStep.key as keyof typeof formData
@@ -395,7 +400,7 @@ export const Onboarding: React.FC<{ telegramId: string | null }> = ({
           )}
 
           {currentStep.type === "select" && (
-            <div className="space-y-2">
+            <div className="space-y-3">
               {[
                 {
                   value: 0,
@@ -427,15 +432,15 @@ export const Onboarding: React.FC<{ telegramId: string | null }> = ({
                   onClick={() =>
                     handleInputChange("workoutFrequency", value.toString())
                   }
-                  className={`w-full p-3 rounded-lg transition-all transform ${
+                  className={`w-full p-5 rounded-2xl transition-all transform ${
                     formData.workoutFrequency === value.toString()
                       ? `bg-gradient-to-r ${color} text-white shadow-lg scale-105`
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xl">{emoji}</span>
-                    <span className="font-semibold text-sm">{label}</span>
+                    <span className="text-3xl">{emoji}</span>
+                    <span className="font-semibold text-base">{label}</span>
                   </div>
                 </button>
               ))}
@@ -443,7 +448,7 @@ export const Onboarding: React.FC<{ telegramId: string | null }> = ({
           )}
 
           {currentStep.type === "goal" && (
-            <div className="space-y-2">
+            <div className="space-y-3">
               {(
                 [
                   {
@@ -472,17 +477,17 @@ export const Onboarding: React.FC<{ telegramId: string | null }> = ({
                 <button
                   key={value}
                   onClick={() => handleInputChange("goal", value)}
-                  className={`w-full p-3 rounded-lg transition-all transform ${
+                  className={`w-full p-5 rounded-2xl transition-all transform ${
                     formData.goal === value
                       ? `bg-gradient-to-r ${gradient} text-white shadow-lg scale-105`
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                   }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{emoji}</span>
+                  <div className="flex items-center gap-4">
+                    <span className="text-4xl">{emoji}</span>
                     <div className="text-left flex-1">
-                      <p className="font-bold text-sm">{title}</p>
-                      <p className="text-xs opacity-90">{desc}</p>
+                      <p className="font-bold text-base">{title}</p>
+                      <p className="text-sm opacity-90">{desc}</p>
                     </div>
                   </div>
                 </button>
@@ -490,26 +495,26 @@ export const Onboarding: React.FC<{ telegramId: string | null }> = ({
             </div>
           )}
 
-          <div className="flex gap-3 mt-4">
+          <div className="flex gap-4 mt-8">
             <button
               onClick={handleBack}
               disabled={step === 0}
-              className="flex-1 bg-gray-300 hover:bg-gray-400 disabled:bg-gray-200 disabled:text-gray-400 text-gray-800 font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all transform hover:scale-105 active:scale-95 shadow-lg text-sm"
+              className="flex-1 bg-gray-300 hover:bg-gray-400 disabled:bg-gray-200 disabled:text-gray-400 text-gray-800 font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all transform hover:scale-105 active:scale-95 shadow-lg text-base"
             >
-              <ChevronLeft size={18} />
+              <ChevronLeft size={24} />
               {UZ.onboarding.back || "Orqaga"}
             </button>
             <button
               onClick={handleNext}
               disabled={loading}
-              className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all transform hover:scale-105 active:scale-95 shadow-lg text-sm"
+              className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all transform hover:scale-105 active:scale-95 shadow-lg text-base"
             >
               {step === steps.length - 1 ? (
                 <>🎉 {UZ.onboarding.finish}</>
               ) : (
                 <>
                   {UZ.onboarding.next}
-                  <ChevronRight size={18} />
+                  <ChevronRight size={24} />
                 </>
               )}
             </button>
