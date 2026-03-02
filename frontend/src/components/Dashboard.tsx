@@ -46,7 +46,7 @@ export const Dashboard: React.FC = () => {
   );
 
   return (
-    <div className="pb-24 bg-gradient-to-br from-cyan-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen">
+    <div className="bg-gradient-to-br from-cyan-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 h-full overflow-y-auto">
       <div className="p-4 space-y-4">
         {/* Creative Header */}
         <div className="pt-2 mb-6">

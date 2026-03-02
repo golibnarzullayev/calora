@@ -49,14 +49,14 @@ export const Profile: React.FC = () => {
 
   if (!user || !calorieTarget) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+      <div className="bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 h-full flex items-center justify-center">
         <p className="text-gray-500 dark:text-gray-400">{UZ.common.loading}</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 pb-20">
+    <div className="bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 h-full overflow-y-auto">
       <div className="p-4 max-w-2xl mx-auto">
         {/* Creative Header Card */}
         <div className="relative mb-8 pt-2">

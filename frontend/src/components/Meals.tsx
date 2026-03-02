@@ -69,7 +69,7 @@ export const Meals: React.FC<MealsProps> = ({ onMealClick }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 pb-20">
+    <div className="bg-gradient-to-br from-orange-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 h-full overflow-y-auto">
       <div className="p-4 max-w-2xl mx-auto">
         {/* Creative Header */}
         <div className="mb-8 pt-2">
