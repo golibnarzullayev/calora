@@ -51,9 +51,6 @@ export class R2Service {
 
       const publicUrl = `${this.publicUrl}/${key}`;
 
-      // Delete local file after successful upload
-      fs.unlinkSync(filePath);
-
       return publicUrl;
     } catch (error) {
       console.error("R2 upload error:", error);

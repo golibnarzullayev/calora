@@ -8,6 +8,7 @@ import mongoose from "mongoose";
 import { FoodPreClassifier } from "../services/FoodPreClassifier.js";
 import { FoodCache } from "../services/FoodCache.js";
 import { ImageHashService } from "../services/ImageHashService.js";
+import fs from "fs";
 
 export class MealController {
   static async uploadMeal(req: Request, res: Response) {
@@ -50,6 +51,8 @@ export class MealController {
         });
 
         await meal.save();
+
+        fs.unlinkSync(req.file.path);
 
         return res.json({
           data: { meal: meal.toObject() },
@@ -100,6 +103,8 @@ export class MealController {
         user._id as mongoose.Types.ObjectId,
         mealDate,
       );
+
+      fs.unlinkSync(req.file.path);
 
       res.json({
         data: { meal: meal.toObject() },
