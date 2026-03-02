@@ -5,6 +5,9 @@ import { User } from "../models/User.js";
 import { GeminiService } from "../services/GeminiService.js";
 import { R2Service } from "../services/R2Service.js";
 import mongoose from "mongoose";
+import { FoodPreClassifier } from "../services/FoodPreClassifier.js";
+import { FoodCache } from "../services/FoodCache.js";
+import { ImageHashService } from "../services/ImageHashService.js";
 
 export class MealController {
   static async uploadMeal(req: Request, res: Response) {
@@ -21,19 +24,60 @@ export class MealController {
         return res.status(404).json({ error: "User not found" });
       }
 
-      const geminiService = new GeminiService(process.env.GEMINI_API_KEY || "");
-      const aiResult = await geminiService.detectFoodFromImage(req.file.path);
+      const r2Service = new R2Service();
+      const fileName = `meals/${user._id}/${Date.now()}-${req.file.originalname}`;
+      const imageUrl = await r2Service.uploadFile(req.file.path, fileName);
 
-      if (!aiResult.isFood) {
+      const cache = new FoodCache();
+      const hashService = new ImageHashService();
+      const hash = await hashService.getHash(req.file.path);
+
+      const cached = await cache.get(hash);
+      if (cached) {
+        const mealDate = new Date(date || new Date());
+        mealDate.setHours(0, 0, 0, 0);
+
+        const meal = new Meal({
+          userId: user._id,
+          date: mealDate,
+          imageUrl: imageUrl,
+          aiResult: cached,
+          macros: {
+            protein: cached.protein,
+            carbs: cached.carbs,
+            fat: cached.fat,
+          },
+        });
+
+        await meal.save();
+
+        return res.json({
+          data: { meal: meal.toObject() },
+          message: "Meal added successfully",
+        });
+      }
+
+      const preClassifier = new FoodPreClassifier();
+      await preClassifier.init();
+
+      const isFoodCandidate = await preClassifier.isLikelyFood(req.file.path);
+
+      if (!isFoodCandidate) {
         return res.status(400).json({
           error: "Bu rasm ovqatga o'xshamaydi.",
           isFood: false,
         });
       }
 
-      const r2Service = new R2Service();
-      const fileName = `meals/${user._id}/${Date.now()}-${req.file.originalname}`;
-      const imageUrl = await r2Service.uploadFile(req.file.path, fileName);
+      const geminiService = new GeminiService(process.env.GEMINI_API_KEY || "");
+      const aiResult = await geminiService.detectFoodFromImage(req.file.path);
+
+      if (!isFoodCandidate || !aiResult.isFood) {
+        return res.status(400).json({
+          error: "Bu rasm ovqatga o'xshamaydi.",
+          isFood: false,
+        });
+      }
 
       const mealDate = new Date(date || new Date());
       mealDate.setHours(0, 0, 0, 0);
@@ -41,8 +85,8 @@ export class MealController {
       const meal = new Meal({
         userId: user._id,
         date: mealDate,
-        imageUrl,
-        aiResult,
+        imageUrl: imageUrl,
+        aiResult: aiResult,
         macros: {
           protein: aiResult.protein,
           carbs: aiResult.carbs,
@@ -58,9 +102,7 @@ export class MealController {
       );
 
       res.json({
-        data: {
-          meal: meal.toObject(),
-        },
+        data: { meal: meal.toObject() },
         message: "Meal added successfully",
       });
     } catch (error) {
