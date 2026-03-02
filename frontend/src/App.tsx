@@ -35,13 +35,6 @@ export const App: React.FC = () => {
 
   const isLoading = userLoading && !user && telegramId;
 
-  const pages: ("dashboard" | "meals" | "stats" | "profile")[] = [
-    "dashboard",
-    "meals",
-    "stats",
-    "profile",
-  ];
-
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -112,11 +105,7 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div
-      className="h-screen bg-white flex flex-col"
-      onTouchStart={(e) => setTouchStart(e.changedTouches[0].clientX)}
-      onTouchEnd={(e) => setTouchEnd(e.changedTouches[0].clientX)}
-    >
+    <div className="h-screen bg-white flex flex-col">
       {currentPage === "dashboard" && <Dashboard />}
       {currentPage === "meals" && <Meals onMealClick={setSelectedMeal} />}
       {currentPage === "stats" && <Stats />}
