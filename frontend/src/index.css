@@ -16,7 +16,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: #f9fafb;
   overscroll-behavior: none;
-  overflow: hidden;
   height: 100vh;
   height: 100dvh;
 }
