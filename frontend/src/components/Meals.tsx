@@ -195,6 +195,14 @@ export const Meals: React.FC<MealsProps> = ({ onMealClick }) => {
                           {meal.aiResult.carbs}g
                         </p>
                       </div>
+                      <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
+                        <p className="text-gray-600 dark:text-gray-400 text-xs mb-1">
+                          {UZ.meals.fat}
+                        </p>
+                        <p className="font-bold text-blue-600 dark:text-blue-400 text-sm">
+                          {meal.aiResult.fat}g
+                        </p>
+                      </div>
                     </div>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
                       {formatDateWithTime(meal.createdAt)}
