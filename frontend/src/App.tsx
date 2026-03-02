@@ -103,10 +103,6 @@ export const App: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    handleSwipe();
-  }, [touchEnd]);
-
   if (isCheckingAuth || isLoading) {
     return (
       <div className="h-screen bg-gradient-to-b from-blue-500 to-blue-600 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center overflow-hidden">
@@ -134,7 +130,7 @@ export const App: React.FC = () => {
 
   return (
     <div
-      className="h-screen bg-white overflow-hidden flex flex-col"
+      className="h-screen bg-white flex flex-col"
       onTouchStart={(e) => setTouchStart(e.changedTouches[0].clientX)}
       onTouchEnd={(e) => setTouchEnd(e.changedTouches[0].clientX)}
     >
