@@ -170,7 +170,7 @@ export const Meals: React.FC<MealsProps> = ({ onMealClick }) => {
                         className="text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors"
                       />
                     </div>
-                    <div className="grid grid-cols-3 gap-2 text-xs">
+                    <div className="grid grid-cols-4 gap-2 text-xs">
                       <div className="bg-violet-50 dark:bg-violet-900/20 p-3 rounded-lg">
                         <p className="text-gray-600 dark:text-gray-400 text-xs mb-1">
                           {UZ.meals.calories}
