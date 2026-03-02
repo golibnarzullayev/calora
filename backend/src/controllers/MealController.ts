@@ -67,7 +67,8 @@ export class MealController {
 
       if (!isFoodCandidate) {
         return res.status(400).json({
-          error: "Bu rasm ovqatga o'xshamaydi.",
+          error:
+            "Bu rasm ovqatga o'xshamaydi. Iltimos, ovqat rasmini yuklang. (Model)",
           isFood: false,
         });
       }
@@ -75,9 +76,10 @@ export class MealController {
       const geminiService = new GeminiService(process.env.GEMINI_API_KEY || "");
       const aiResult = await geminiService.detectFoodFromImage(req.file.path);
 
-      if (!isFoodCandidate || !aiResult.isFood) {
+      if (!aiResult.isFood) {
         return res.status(400).json({
-          error: "Bu rasm ovqatga o'xshamaydi.",
+          error:
+            "Bu rasm ovqatga o'xshamaydi. Iltimos, ovqat rasmini yuklang. (Gemini)",
           isFood: false,
         });
       }
