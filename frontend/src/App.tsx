@@ -29,9 +29,7 @@ export const App: React.FC = () => {
     "dashboard" | "meals" | "stats" | "profile"
   >("dashboard");
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
-
+  
   const { data: user, isLoading: userLoading } = useUser(telegramId || null);
   const { data: calorieTarget } = useCalorieTarget(telegramId || null);
 
@@ -88,20 +86,6 @@ export const App: React.FC = () => {
       setOnboarded(true);
     }
   }, [user, calorieTarget, setUser, setCalorieTarget, setOnboarded]);
-
-  const handleSwipe = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > 50;
-    const isRightSwipe = distance < -50;
-
-    if (isLeftSwipe && currentIndex < pages.length - 1) {
-      setCurrentPage(pages[currentIndex + 1]);
-    }
-    if (isRightSwipe && currentIndex > 0) {
-      setCurrentPage(pages[currentIndex - 1]);
-    }
-  };
 
   if (isCheckingAuth || isLoading) {
     return (
