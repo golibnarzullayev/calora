@@ -12,15 +12,15 @@ export class FoodPreClassifier {
   async isLikelyFood(imagePath: string): Promise<boolean> {
     const imageBuffer = fs.readFileSync(imagePath);
 
-    const tensor = tf.node.decodeImage(imageBuffer) as tf.Tensor3D;
+    const tensor = tf.node.decodeImage(imageBuffer, 3) as tf.Tensor3D;
 
-    const predictions = await this.model.classify(tensor);
+    const predictions = await this.model.classify(tensor, 10);
 
     tensor.dispose();
 
     const score = this.calculateFoodScore(predictions);
 
-    return score > 0.4;
+    return score > 0.2;
   }
 
   private calculateFoodScore(
