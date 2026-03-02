@@ -41,7 +41,6 @@ export const App: React.FC = () => {
     "stats",
     "profile",
   ];
-  const currentIndex = pages.indexOf(currentPage);
 
   useEffect(() => {
     const checkAuth = async () => {
