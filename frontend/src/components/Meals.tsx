@@ -52,7 +52,6 @@ export const Meals: React.FC<MealsProps> = ({ onMealClick }) => {
     } catch (error) {
       const errorMsg = getErrorMessage(error);
       showError(errorMsg);
-      console.error("Upload error:", error);
     } finally {
       setLoading(false);
     }
@@ -66,7 +65,6 @@ export const Meals: React.FC<MealsProps> = ({ onMealClick }) => {
     } catch (error) {
       const errorMsg = getErrorMessage(error);
       showError(errorMsg);
-      console.error("Delete error:", error);
     }
   };
 
@@ -206,6 +204,7 @@ export const Meals: React.FC<MealsProps> = ({ onMealClick }) => {
                         e.stopPropagation();
                         handleDelete(meal._id);
                       }}
+                      disabled={loading}
                       className="w-full mt-3 px-3 py-2 bg-red-50 dark:bg-red-900 text-red-600 dark:text-red-400 rounded-lg font-semibold text-xs hover:bg-red-100 dark:hover:bg-red-900 transition-all flex items-center justify-center gap-1"
                     >
                       <Trash2 size={14} />

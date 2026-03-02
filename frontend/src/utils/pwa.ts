@@ -56,7 +56,6 @@ export const unregisterServiceWorker = async () => {
       for (const registration of registrations) {
         await registration.unregister();
       }
-      console.log("Service Workers unregistered");
     } catch (error) {
       console.error("Failed to unregister Service Workers:", error);
     }
@@ -96,7 +95,6 @@ export const setupInstallPrompt = () => {
   });
 
   window.addEventListener("appinstalled", () => {
-    console.log("PWA was installed");
     deferredPrompt = null;
     const event = new CustomEvent("app-installed");
     window.dispatchEvent(event);
@@ -106,8 +104,6 @@ export const setupInstallPrompt = () => {
 export const triggerInstall = async () => {
   if (deferredPrompt) {
     deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log(`User response to the install prompt: ${outcome}`);
     deferredPrompt = null;
   }
 };

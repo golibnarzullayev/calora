@@ -19,7 +19,7 @@ export const Navigation: React.FC<NavigationProps> = ({
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 flex justify-around items-center h-16 shadow-lg dark:shadow-2xl">
+    <nav className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 flex justify-around items-center h-16 shadow-lg dark:shadow-2xl flex-shrink-0">
       {items.map(({ id, label, icon: Icon }) => (
         <button
           key={id}

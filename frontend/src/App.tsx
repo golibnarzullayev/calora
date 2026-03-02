@@ -29,7 +29,7 @@ export const App: React.FC = () => {
     "dashboard" | "meals" | "stats" | "profile"
   >("dashboard");
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
-  
+
   const { data: user, isLoading: userLoading } = useUser(telegramId || null);
   const { data: calorieTarget } = useCalorieTarget(telegramId || null);
 
@@ -105,11 +105,13 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="h-screen bg-white flex flex-col">
-      {currentPage === "dashboard" && <Dashboard />}
-      {currentPage === "meals" && <Meals onMealClick={setSelectedMeal} />}
-      {currentPage === "stats" && <Stats />}
-      {currentPage === "profile" && <Profile />}
+    <div className="h-screen bg-white flex flex-col overflow-hidden">
+      <div className="flex-1 overflow-y-auto">
+        {currentPage === "dashboard" && <Dashboard />}
+        {currentPage === "meals" && <Meals onMealClick={setSelectedMeal} />}
+        {currentPage === "stats" && <Stats />}
+        {currentPage === "profile" && <Profile />}
+      </div>
       <Navigation currentPage={currentPage} onPageChange={setCurrentPage} />
       <ToastContainer toasts={toasts} onClose={removeToast} />
     </div>
