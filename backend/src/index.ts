@@ -11,26 +11,9 @@ import { setupTelegramBot } from "./telegram/bot.js";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// CORS configuration
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:3000",
-  "https://calora.gignite.uz",
-  "https://www.calora.gignite.uz",
-];
-
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    origin: "*"
   }),
 );
 
@@ -44,6 +27,9 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use("/api/healthchek", (req, res) => {
+  res.json({ message: "OK" });
+});
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/meals", mealRoutes);
