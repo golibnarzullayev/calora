@@ -27,9 +27,34 @@ export class GeminiService {
       const base64Image = imageBuffer.toString("base64");
       const mimeType = this.getMimeType(imagePath);
 
-      const prompt = `You are a food detection and nutrition analysis AI. Analyze this image and provide a JSON response.
+const prompt = `You are a STRICT food detection and nutrition analysis AI.
 
-If this is NOT a food image, respond with:
+Your FIRST task is classification, NOT description.
+
+STEP 1 — FOOD VALIDATION (VERY STRICT):
+Decide whether the image CLEARLY contains edible food intended for human consumption.
+
+Return isFood = false if ANY of these are true:
+- No visible food items
+- Humans, faces, selfies, documents, screens, rooms, objects, landscapes
+- Drinks without visible edible context
+- Empty plates or tables
+- Packaging only (without visible food)
+- Blurry or unclear images
+- AI-generated art, icons, logos, drawings
+- Fitness photos, gym scenes, supplements, pills
+- Kitchen tools without food
+- Confidence below 0.6
+
+IMPORTANT:
+If you are unsure → IT IS NOT FOOD.
+
+Only mark isFood=true when food is visually obvious.
+
+STEP 2 — RESPONSE FORMAT
+
+If this is NOT food, respond EXACTLY:
+
 {
   "isFood": false,
   "mealName": "",
@@ -40,10 +65,13 @@ If this is NOT a food image, respond with:
   "confidence": 0
 }
 
-If this IS a food image, respond with a JSON object containing:
+STEP 3 — IF FOOD IS CONFIRMED
+
+Return JSON:
+
 {
   "isFood": true,
-  "mealName": "Name of the meal/dish in Uzbek language",
+  "mealName": "Uzbek name in LATIN script",
   "calories": estimated_calories_per_serving,
   "protein": estimated_protein_in_grams,
   "carbs": estimated_carbs_in_grams,
@@ -51,17 +79,29 @@ If this IS a food image, respond with a JSON object containing:
   "confidence": confidence_score_0_to_1
 }
 
-IMPORTANT:
-- Only respond with valid JSON, no other text
-- Estimate portion size as a typical serving
-- Confidence should be 0-1 (0.6 minimum for acceptance)
-- Be conservative with calorie estimates
-- MUST return mealName in Uzbek language using LATIN/ROMAN script (NOT Cyrillic)
-- Use Latin alphabet for Uzbek: a, b, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, x, y, z
-- If the dish is international, translate it to Uzbek in Latin script
-- Examples: "Manti", "Shumlama", "Qabob", "Osh", "Lagman", "Samsa", "Shurpa"
-- NEVER use Cyrillic characters (А, Б, В, Г, Д, etc.)
-- NEVER use Russian language`;
+STRICT RULES:
+- Only respond with VALID JSON
+- NO explanations
+- NO markdown
+- NO extra text
+- Be conservative with calories
+- Confidence must reflect visual certainty
+- If food is partially visible → reduce confidence
+- If uncertain → return isFood=false
+
+LANGUAGE RULES:
+- mealName MUST be Uzbek Latin alphabet only
+- NEVER use Cyrillic
+- NEVER use Russian
+- Translate international foods to Uzbek Latin
+
+Examples:
+"Osh", "Manti", "Lagman", "Samsa", "Qabob", "Shurpa"
+
+REMEMBER:
+False positives are WORSE than false negatives.
+When in doubt → NOT FOOD.
+`;
 
       const response = await this.model.generateContent([
         {
