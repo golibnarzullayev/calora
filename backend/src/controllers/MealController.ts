@@ -84,6 +84,8 @@ export class MealController {
         });
       }
 
+      await cache.set(hash, aiResult);
+
       const mealDate = new Date(date || new Date());
       mealDate.setHours(0, 0, 0, 0);
 

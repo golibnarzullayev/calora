@@ -6,7 +6,10 @@ export class FoodPreClassifier {
   private model!: mobilenet.MobileNet;
 
   async init() {
-    this.model = await mobilenet.load();
+    this.model = await mobilenet.load({
+      version: 2,
+      alpha: 1.0,
+    });
   }
 
   async isLikelyFood(imagePath: string): Promise<boolean> {
@@ -18,9 +21,17 @@ export class FoodPreClassifier {
 
     tensor.dispose();
 
+    if (!predictions.length) return false;
+
+    const top1 = predictions[0];
+
+    if (top1.probability > 0.5) {
+      return true;
+    }
+
     const score = this.calculateFoodScore(predictions);
 
-    return score > 0.2;
+    return score > 0.25;
   }
 
   private calculateFoodScore(
@@ -28,145 +39,148 @@ export class FoodPreClassifier {
   ) {
     let score = 0;
 
-    const FOOD_KEYWORDS = {
-      strong: [
-        "pizza",
-        "burger",
-        "cheeseburger",
-        "hotdog",
-        "sandwich",
-        "taco",
-        "burrito",
-        "shawarma",
-        "kebab",
-        "shashlik",
-        "rice",
-        "pilaf",
-        "risotto",
-        "paella",
-        "fried rice",
-        "pasta",
-        "spaghetti",
-        "noodle",
-        "ramen",
-        "udon",
-        "steak",
-        "meat",
-        "beef",
-        "lamb",
-        "chicken",
-        "turkey",
-        "sausage",
-        "meatball",
-        "cutlet",
-        "roast",
-        "grill",
-        "sushi",
-        "dumpling",
-        "omelet",
-        "omelette",
-        "soup",
-        "stew",
-        "curry",
-        "chili",
-        "hot pot",
-        "salad",
-        "cake",
-        "dessert",
-        "cookie",
-        "biscuit",
-        "pie",
-        "pudding",
-        "ice cream",
-        "chocolate",
-        "fruit",
-        "apple",
-        "banana",
-        "orange",
-        "grape",
-        "melon",
-        "watermelon",
-        "berry",
-        "vegetable",
-        "tomato",
-        "cucumber",
-        "carrot",
-        "potato",
-        "onion",
-        "pepper",
-        "eggplant",
-        "corn",
-      ],
-
-      medium: [
-        "dish",
-        "meal",
-        "entree",
-        "main course",
-        "side dish",
-        "plate",
-        "bowl",
-        "platter",
-        "serving",
-        "bread",
-        "loaf",
-        "bun",
-        "roll",
-        "bagel",
-        "baguette",
-        "croissant",
-        "pretzel",
-        "muffin",
-        "pancake",
-        "waffle",
-        "cooked",
-        "fried",
-        "baked",
-        "grilled",
-        "roasted",
-        "broth",
-        "porridge",
-        "cereal",
-      ],
-
-      weak: [
-        "kitchen",
-        "restaurant",
-        "cafeteria",
-        "buffet",
-        "dining table",
-        "cutting board",
-      ],
-    };
-
-    const BLACKLIST = [
-      "plate rack",
-      "restaurant interior",
-      "grocery store",
-      "supermarket",
-      "butcher shop",
-      "kitchen utensil",
-      "spoon",
-      "fork",
-      "knife",
-      "pan",
-      "pot",
-    ];
-
     for (const p of predictions) {
       const name = p.className.toLowerCase();
 
-      if (BLACKLIST.some((b) => name.includes(b))) continue;
+      if (this.matches(name, BLACKLIST)) continue;
 
-      if (FOOD_KEYWORDS.strong.some((k) => name.includes(k))) {
+      if (this.matches(name, STRONG_KEYWORDS)) {
         score += p.probability * 1.0;
-      } else if (FOOD_KEYWORDS.medium.some((k) => name.includes(k))) {
+      } else if (this.matches(name, MEDIUM_KEYWORDS)) {
         score += p.probability * 0.6;
-      } else if (FOOD_KEYWORDS.weak.some((k) => name.includes(k))) {
-        score += p.probability * 0.3;
       }
     }
 
     return score;
   }
+
+  private matches(className: string, keywords: string[]) {
+    const parts = className
+      .toLowerCase()
+      .split(",")
+      .map((p) => p.trim());
+
+    return parts.some((part) =>
+      keywords.some((keyword) => part.includes(keyword)),
+    );
+  }
 }
+
+const STRONG_KEYWORDS = [
+  "pizza",
+  "burger",
+  "cheeseburger",
+  "hotdog",
+  "sandwich",
+  "taco",
+  "burrito",
+  "shawarma",
+  "kebab",
+  "shashlik",
+  "rice",
+  "pilaf",
+  "risotto",
+  "paella",
+  "fried rice",
+  "pasta",
+  "spaghetti",
+  "noodle",
+  "ramen",
+  "udon",
+  "steak",
+  "meat",
+  "beef",
+  "lamb",
+  "chicken",
+  "turkey",
+  "sausage",
+  "meatball",
+  "cutlet",
+  "roast",
+  "grill",
+  "sushi",
+  "dumpling",
+  "omelet",
+  "omelette",
+  "soup",
+  "stew",
+  "curry",
+  "chili",
+  "hot pot",
+  "hotpot",
+  "salad",
+  "potpie",
+  "pie",
+  "loaf",
+  "cake",
+  "dessert",
+  "cookie",
+  "biscuit",
+  "pudding",
+  "ice cream",
+  "chocolate",
+  "fruit",
+  "apple",
+  "banana",
+  "orange",
+  "grape",
+  "melon",
+  "watermelon",
+  "berry",
+  "vegetable",
+  "tomato",
+  "cucumber",
+  "carrot",
+  "potato",
+  "onion",
+  "pepper",
+  "eggplant",
+  "corn",
+  "lobster",
+  "crab",
+  "shrimp",
+  "fish",
+];
+
+const MEDIUM_KEYWORDS = [
+  "dish",
+  "meal",
+  "entree",
+  "main course",
+  "side dish",
+  "plate",
+  "bowl",
+  "platter",
+  "bread",
+  "bun",
+  "roll",
+  "bagel",
+  "baguette",
+  "croissant",
+  "pretzel",
+  "muffin",
+  "pancake",
+  "waffle",
+  "cooked",
+  "fried",
+  "baked",
+  "grilled",
+  "roasted",
+  "broth",
+  "porridge",
+  "cereal",
+];
+
+const BLACKLIST = [
+  "plate rack",
+  "restaurant interior",
+  "grocery store",
+  "supermarket",
+  "butcher shop",
+  "kitchen utensil",
+  "spoon",
+  "fork",
+  "knife",
+  "pan",
+  "pot",
+];
