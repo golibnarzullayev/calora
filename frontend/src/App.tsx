@@ -105,17 +105,22 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="h-screen flex flex-col pb-[env(safe-area-inset-bottom)]">
-      <div className="flex-1 overflow-y-auto">
-        {currentPage === "dashboard" && <Dashboard />}
-        {currentPage === "meals" && <Meals onMealClick={setSelectedMeal} />}
-        {currentPage === "stats" && <Stats />}
-        {currentPage === "profile" && <Profile />}
-      </div>
-      <Navigation currentPage={currentPage} onPageChange={setCurrentPage} />
-      <ToastContainer toasts={toasts} onClose={removeToast} />
-    </div>
-  );
+  <div className="h-[100dvh] flex flex-col bg-white">
+    <main className="flex-1 overflow-y-auto pb-24">
+      {currentPage === "dashboard" && <Dashboard />}
+      {currentPage === "meals" && <Meals onMealClick={setSelectedMeal} />}
+      {currentPage === "stats" && <Stats />}
+      {currentPage === "profile" && <Profile />}
+    </main>
+
+    <Navigation
+      currentPage={currentPage}
+      onPageChange={setCurrentPage}
+    />
+
+    <ToastContainer toasts={toasts} onClose={removeToast} />
+  </div>
+);
 };
 
 export default App;
