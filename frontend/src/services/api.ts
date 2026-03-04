@@ -33,9 +33,7 @@ export const userAPI = {
 
 export const mealAPI = {
   uploadMeal: (userId: string, formData: FormData) =>
-    api.post(`/meals/${userId}/upload`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    }),
+    api.post(`/meals/${userId}/upload`, formData),
   getTodayMeals: (userId: string) => api.get(`/meals/${userId}/today`),
   getMealsByDate: (userId: string, date: string) =>
     api.get(`/meals/${userId}/by-date`, { params: { date } }),
