@@ -105,7 +105,7 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="h-screen bg-white flex flex-col overflow-hidden">
+    <div className="h-screen flex flex-col pb-[env(safe-area-inset-bottom)]">
       <div className="flex-1 overflow-y-auto">
         {currentPage === "dashboard" && <Dashboard />}
         {currentPage === "meals" && <Meals onMealClick={setSelectedMeal} />}
