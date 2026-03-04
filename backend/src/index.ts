@@ -11,11 +11,14 @@ import { setupTelegramBot } from "./telegram/bot.js";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(
-  cors({
-    origin: "*"
-  }),
-);
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: false
+}));
+
+app.options("*", cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
