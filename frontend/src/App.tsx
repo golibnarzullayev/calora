@@ -106,7 +106,10 @@ export const App: React.FC = () => {
 
   return (
   <div className="h-[100dvh] flex flex-col">
-    <main className="flex-1 overflow-y-auto pb-20">
+    <main 
+      className="flex-1 overflow-y-auto"
+      style={{ paddingBottom: "calc(64px + env(safe-area-inset-bottom))" }}
+    >
       {currentPage === "dashboard" && <Dashboard />}
       {currentPage === "meals" && <Meals onMealClick={setSelectedMeal} />}
       {currentPage === "stats" && <Stats />}
