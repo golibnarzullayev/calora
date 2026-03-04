@@ -42,7 +42,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 
   /* iPhone safe areas */
-  padding-bottom: env(safe-area-inset-bottom);
   padding-top: env(safe-area-inset-top);
 
   /* Prevent pull to refresh */
