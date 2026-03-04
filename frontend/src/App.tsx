@@ -106,7 +106,7 @@ export const App: React.FC = () => {
 
   return (
   <div className="h-[100dvh] flex flex-col">
-    <main className="flex-1 overflow-y-auto pb-24">
+    <main className="flex-1 overflow-y-auto pb-20">
       {currentPage === "dashboard" && <Dashboard />}
       {currentPage === "meals" && <Meals onMealClick={setSelectedMeal} />}
       {currentPage === "stats" && <Stats />}
