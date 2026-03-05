@@ -25,13 +25,19 @@ export class FoodPreClassifier {
 
     const top1 = predictions[0];
 
-    if (top1.probability > 0.5) {
-      return true;
+    // DEBUG uchun
+    // console.log(predictions);
+
+    // Agar model ancha ishonch bilan aytsa
+    if (top1.probability > 0.3) {
+      if (!this.matches(top1.className, BLACKLIST)) {
+        return true;
+      }
     }
 
     const score = this.calculateFoodScore(predictions);
 
-    return score > 0.25;
+    return score > 0.15;
   }
 
   private calculateFoodScore(
@@ -45,9 +51,11 @@ export class FoodPreClassifier {
       if (this.matches(name, BLACKLIST)) continue;
 
       if (this.matches(name, STRONG_KEYWORDS)) {
-        score += p.probability * 1.0;
+        score += p.probability * 1.2;
       } else if (this.matches(name, MEDIUM_KEYWORDS)) {
-        score += p.probability * 0.6;
+        score += p.probability * 0.7;
+      } else if (this.matches(name, WEAK_KEYWORDS)) {
+        score += p.probability * 0.4;
       }
     }
 
@@ -111,7 +119,6 @@ const STRONG_KEYWORDS = [
   "salad",
   "potpie",
   "pie",
-  "loaf",
   "cake",
   "dessert",
   "cookie",
@@ -169,6 +176,15 @@ const MEDIUM_KEYWORDS = [
   "broth",
   "porridge",
   "cereal",
+];
+
+const WEAK_KEYWORDS = [
+  "table",
+  "restaurant",
+  "kitchen",
+  "food",
+  "dinner",
+  "lunch",
 ];
 
 const BLACKLIST = [
