@@ -19,6 +19,18 @@ export const useUser = (userId: string | null) => {
   });
 };
 
+export const useUserWithTelegramId = (telegramId: string | null) => {
+  return useQuery({
+    queryKey: ["user", telegramId],
+    queryFn: async () => {
+      if (!telegramId) return null;
+      const response = await userAPI.getUserWithTelegramId(telegramId);
+      return response.data.user as User;
+    },
+    enabled: !!telegramId,
+  });
+};
+
 export const useCalorieTarget = (userId: string | null) => {
   const { calorieTarget: storeCalorieTarget } = useAppStore();
 

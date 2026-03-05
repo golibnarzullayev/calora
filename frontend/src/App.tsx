@@ -9,8 +9,12 @@ import { Profile } from "./components/Profile";
 import { MealDetail } from "./components/MealDetail";
 import { Navigation } from "./components/Navigation";
 import { ToastContainer } from "./components/Toast";
-import { useUser, useCalorieTarget } from "./hooks/useQueries";
-import { authAPI } from "./services/api";
+import {
+  useUser,
+  useCalorieTarget,
+  useUserWithTelegramId,
+} from "./hooks/useQueries";
+import { authAPI, userAPI } from "./services/api";
 import type { Meal } from "./store/useAppStore";
 import { useToast } from "./context/ToastContext";
 
@@ -60,8 +64,18 @@ export const App: React.FC = () => {
         const id = getTelegramUserId();
         if (id) {
           setTelegramId(id);
-          // For Telegram users, skip onboarding and go directly to dashboard
-          setOnboarded(true);
+
+          try {
+            const response = await userAPI.getUserWithTelegramId(id);
+            if (response.data.user && response.data.calorieTarget) {
+              setUser(response.data.user);
+              setCalorieTarget(response.data.calorieTarget);
+              setOnboarded(true);
+              return;
+            }
+          } catch (error) {
+            localStorage.removeItem("authToken");
+          }
           return;
         }
       } finally {

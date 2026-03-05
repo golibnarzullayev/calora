@@ -29,6 +29,8 @@ export const userAPI = {
   getUser: (userId: string) => api.get(`/users/${userId}`),
   updateWeight: (userId: string, weight: number) =>
     api.patch(`/users/${userId}/weight`, { weight }),
+  getUserWithTelegramId: (telegramId: string) =>
+    api.get(`/users/telegram/${telegramId}`),
 };
 
 export const mealAPI = {

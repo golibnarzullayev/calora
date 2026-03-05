@@ -92,6 +92,32 @@ export class UserController {
     }
   }
 
+  static async getUserWithTelegramId(req: Request, res: Response) {
+    try {
+      const { telegramId } = req.params;
+      const user = await User.findOne({ telegramId });
+
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const calorieResult = CalorieCalculator.calculate({
+        age: user.age,
+        weight: user.weight,
+        height: user.height,
+        workoutFrequency: user.workoutFrequency,
+        goal: user.goal,
+      });
+
+      res.json({
+        user: user.toObject(),
+        calorieTarget: calorieResult,
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch user" });
+    }
+  }
+
   static async updateWeight(req: Request, res: Response) {
     try {
       const { userId } = req.params;
