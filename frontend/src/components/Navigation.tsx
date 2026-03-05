@@ -19,8 +19,8 @@ export const Navigation: React.FC<NavigationProps> = ({
   ];
 
   return (
-    <nav
-      className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 flex justify-around items-center min-h-16 shadow-lg"
+    <nav 
+      className="fixed bottom-0 left-0 right-0 h-16 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 flex justify-around items-center shadow-lg"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       {items.map(({ id, label, icon: Icon }) => (
