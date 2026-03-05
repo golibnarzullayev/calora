@@ -45,6 +45,10 @@ export const Profile: React.FC = () => {
     setShowLogoutModal(false);
     reset();
     logout();
+
+    if (window.Telegram?.WebApp) {
+      window.Telegram.WebApp.close();
+    }
   };
 
   if (!user || !calorieTarget) {
