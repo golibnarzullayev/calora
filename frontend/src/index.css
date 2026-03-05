@@ -55,10 +55,6 @@ body {
   -webkit-touch-callout: none;
 }
 
-main {
-  min-height: 0;
-}
-
 /* Inputs */
 input,
 select,
