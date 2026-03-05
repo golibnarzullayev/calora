@@ -3,7 +3,7 @@ import { ArrowLeft, Trash2, Flame, Zap, Droplets } from "lucide-react";
 import { UZ } from "../constants/uz";
 import { formatDateWithTime } from "../utils/dateFormatter";
 import { mealAPI } from "../services/api";
-import { useToast } from "../hooks/useToast";
+import { useToast } from "../context/ToastContext";
 import { getErrorMessage } from "../utils/errorHandler";
 import type { Meal } from "../store/useAppStore";
 

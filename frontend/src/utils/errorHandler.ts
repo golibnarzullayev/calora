@@ -4,7 +4,7 @@ export const getErrorMessage = (error: any): string => {
   // If error has a custom message from backend
   if (error?.response?.data?.error) {
     const backendError = error.response.data.error;
-    
+
     // Map common backend errors to Uzbek messages
     const errorMap: Record<string, string> = {
       "User not found": UZ.errors.userNotFound,
@@ -76,9 +76,6 @@ export const getErrorMessage = (error: any): string => {
   return UZ.errors.serverError;
 };
 
-export const handleApiError = (
-  error: any,
-  defaultMessage?: string
-): string => {
+export const handleApiError = (error: any, defaultMessage?: string): string => {
   return defaultMessage || getErrorMessage(error);
 };

@@ -4,7 +4,7 @@ import { mealAPI } from "../services/api";
 import { UZ } from "../constants/uz";
 import { Trash2, Upload, Camera, ChevronRight } from "lucide-react";
 import { useMeals, useRefreshMeals } from "../hooks/useMeals";
-import { useToast } from "../hooks/useToast";
+import { useToast } from "../context/ToastContext";
 import { formatDateWithTime } from "../utils/dateFormatter";
 import { getErrorMessage } from "../utils/errorHandler";
 import type { Meal } from "../store/useAppStore";

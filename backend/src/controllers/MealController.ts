@@ -12,28 +12,39 @@ import fs from "fs";
 
 export class MealController {
   static async uploadMeal(req: Request, res: Response) {
+    const r2Service = new R2Service();
+    let uploadedFileName: string | null = null;
+
     try {
       const { userId } = req.params;
       const { date } = req.body;
 
       if (!req.file) {
-        return res.status(400).json({ error: "No image provided" });
+        return res.status(400).json({
+          error: "Rasm yuklanmadi. Iltimos, ovqat rasmini yuboring.",
+        });
       }
 
       const user = await User.findById(userId);
       if (!user) {
-        return res.status(404).json({ error: "User not found" });
+        return res.status(404).json({
+          error: "Foydalanuvchi topilmadi.",
+        });
       }
 
-      const r2Service = new R2Service();
-      const fileName = `meals/${user._id}/${Date.now()}-${req.file.originalname}`;
-      const imageUrl = await r2Service.uploadFile(req.file.path, fileName);
+      uploadedFileName = `meals/${user._id}/${Date.now()}-${req.file.originalname}`;
+
+      const imageUrl = await r2Service.uploadFile(
+        req.file.path,
+        uploadedFileName,
+      );
 
       const cache = new FoodCache();
       const hashService = new ImageHashService();
       const hash = await hashService.getHash(req.file.path);
 
       const cached = await cache.get(hash);
+
       if (cached) {
         const mealDate = new Date(date || new Date());
         mealDate.setHours(0, 0, 0, 0);
@@ -41,7 +52,7 @@ export class MealController {
         const meal = new Meal({
           userId: user._id,
           date: mealDate,
-          imageUrl: imageUrl,
+          imageUrl,
           aiResult: cached,
           macros: {
             protein: cached.protein,
@@ -67,8 +78,7 @@ export class MealController {
 
       if (!isFoodCandidate) {
         return res.status(400).json({
-          error:
-            "Bu rasm ovqatga o'xshamaydi. Iltimos, ovqat rasmini yuklang. (Model)",
+          error: "Rasmda ovqat aniqlanmadi. Iltimos, ovqat rasmini yuklang.",
           isFood: false,
         });
       }
@@ -79,7 +89,7 @@ export class MealController {
       if (!aiResult.isFood) {
         return res.status(400).json({
           error:
-            "Bu rasm ovqatga o'xshamaydi. Iltimos, ovqat rasmini yuklang. (Gemini)",
+            "Yuklangan rasm ovqatga o‘xshamaydi. Iltimos, ovqat tasvirini yuboring.",
           isFood: false,
         });
       }
@@ -92,8 +102,8 @@ export class MealController {
       const meal = new Meal({
         userId: user._id,
         date: mealDate,
-        imageUrl: imageUrl,
-        aiResult: aiResult,
+        imageUrl,
+        aiResult,
         macros: {
           protein: aiResult.protein,
           carbs: aiResult.carbs,
@@ -115,8 +125,23 @@ export class MealController {
         message: "Meal added successfully",
       });
     } catch (error) {
+      if (uploadedFileName) {
+        try {
+          await r2Service.deleteFile(uploadedFileName);
+        } catch (cleanupError) {
+          console.error("R2 cleanup failed:", cleanupError);
+        }
+      }
+
+      if (req.file?.path) {
+        try {
+          fs.unlinkSync(req.file.path);
+        } catch {}
+      }
+
       const errorMessage =
         error instanceof Error ? error.message : "Failed to upload meal";
+
       res.status(500).json({ error: errorMessage });
     }
   }

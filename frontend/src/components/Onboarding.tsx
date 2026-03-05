@@ -3,7 +3,7 @@ import { useAppStore } from "../store/useAppStore";
 import { userAPI, authAPI } from "../services/api";
 import { UZ } from "../constants/uz";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useToast } from "../hooks/useToast";
+import { useToast } from "../context/ToastContext";
 import { getErrorMessage } from "../utils/errorHandler";
 import { PhoneInput } from "./PhoneInput";
 

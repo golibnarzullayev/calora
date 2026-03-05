@@ -5,10 +5,13 @@ import { Camera } from "lucide-react";
 import { useMeals, useDailyStats, useUploadMeal } from "../hooks/useQueries";
 import { formatDateWithDay } from "../utils/dateFormatter";
 import type { Meal } from "../store/useAppStore";
+import { getErrorMessage } from "../utils/errorHandler";
+import { useToast } from "../context/ToastContext";
 
 export const Dashboard: React.FC = () => {
   const { user, calorieTarget } = useAppStore();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const { error: showError } = useToast();
 
   const { data: meals = [] } = useMeals(user?._id || null);
   const { data: dailyStats } = useDailyStats(user?._id || null);
@@ -30,7 +33,8 @@ export const Dashboard: React.FC = () => {
         fileInputRef.current.value = "";
       }
     } catch (error) {
-      console.error("Upload error:", error);
+      const errorMsg = getErrorMessage(error);
+      showError(errorMsg);
     }
   };
 
