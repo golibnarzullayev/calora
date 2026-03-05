@@ -9,11 +9,7 @@ import { Profile } from "./components/Profile";
 import { MealDetail } from "./components/MealDetail";
 import { Navigation } from "./components/Navigation";
 import { ToastContainer } from "./components/Toast";
-import {
-  useUser,
-  useCalorieTarget,
-  useUserWithTelegramId,
-} from "./hooks/useQueries";
+import { useUser, useCalorieTarget } from "./hooks/useQueries";
 import { authAPI, userAPI } from "./services/api";
 import type { Meal } from "./store/useAppStore";
 import { useToast } from "./context/ToastContext";
