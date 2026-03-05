@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAppStore } from "../store/useAppStore";
 import { userAPI, authAPI } from "../services/api";
 import { UZ } from "../constants/uz";
@@ -10,6 +10,8 @@ import { PhoneInput } from "./PhoneInput";
 export const Onboarding: React.FC<{ telegramId: string | null }> = ({
   telegramId,
 }) => {
+  const SWIPE_DELAY = 100;
+
   const [step, setStep] = useState(0);
   const [isLoginMode, setIsLoginMode] = useState(false);
   const [formData, setFormData] = useState({
@@ -164,6 +166,29 @@ export const Onboarding: React.FC<{ telegramId: string | null }> = ({
 
   const currentStep = steps[step];
 
+  useEffect(() => {
+    const tg = (window as any)?.Telegram?.WebApp;
+
+    if (tg) {
+      tg.expand();
+      tg.disableVerticalSwipes?.();
+    }
+
+    const preventPullDown = (e: TouchEvent) => {
+      if (e.touches.length === 1) {
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener("touchmove", preventPullDown, {
+      passive: false,
+    });
+
+    return () => {
+      document.removeEventListener("touchmove", preventPullDown);
+    };
+  }, []);
+
   return (
     <div className="h-screen bg-gradient-to-br from-blue-600 via-blue-500 to-purple-600 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col items-center justify-center px-4 py-2 relative overflow-hidden">
       {/* Animated background elements */}
@@ -266,7 +291,7 @@ export const Onboarding: React.FC<{ telegramId: string | null }> = ({
                 className="flex-1 text-center bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-3xl py-10 px-6 cursor-grab active:cursor-grabbing select-none overflow-hidden relative"
                 onWheel={(e: React.WheelEvent<HTMLDivElement>) => {
                   const now = Date.now();
-                  if (now - lastSwipeTime < 500) return;
+                  if (now - lastSwipeTime < SWIPE_DELAY) return;
 
                   const current =
                     parseInt(
@@ -274,126 +299,128 @@ export const Onboarding: React.FC<{ telegramId: string | null }> = ({
                         currentStep.key as keyof typeof formData
                       ] as string,
                     ) || 0;
+
                   const direction = e.deltaY > 0 ? 1 : -1;
+
                   const newValue = current + direction;
 
-                  let shouldPrevent = false;
+                  let shouldUpdate = false;
 
                   if (
                     currentStep.key === "age" &&
                     newValue >= 18 &&
                     newValue <= 80
-                  ) {
-                    handleInputChange(currentStep.key, newValue);
-                    setLastSwipeTime(now);
-                    shouldPrevent = true;
-                  } else if (
+                  )
+                    shouldUpdate = true;
+
+                  if (
                     currentStep.key === "weight" &&
                     newValue >= 40 &&
                     newValue <= 200
-                  ) {
-                    handleInputChange(currentStep.key, newValue);
-                    setLastSwipeTime(now);
-                    shouldPrevent = true;
-                  } else if (
+                  )
+                    shouldUpdate = true;
+
+                  if (
                     currentStep.key === "height" &&
                     newValue >= 140 &&
                     newValue <= 220
-                  ) {
+                  )
+                    shouldUpdate = true;
+
+                  if (shouldUpdate) {
                     handleInputChange(currentStep.key, newValue);
                     setLastSwipeTime(now);
-                    shouldPrevent = true;
-                  }
-
-                  if (shouldPrevent) {
-                    (e as any).preventDefault?.();
                   }
                 }}
                 onTouchStart={(e) => {
-                  if (e.touches.length === 1) {
-                    const touch = e.touches[0];
-                    const startY = touch.clientY;
+                  if (e.touches.length !== 1) return;
 
-                    const handleTouchEnd = (endEvent: TouchEvent) => {
-                      const now = Date.now();
-                      if (now - lastSwipeTime < 500) {
-                        document.removeEventListener(
-                          "touchend",
-                          handleTouchEnd,
-                        );
-                        return;
-                      }
+                  const startY = e.touches[0].clientY;
 
-                      const endY = endEvent.changedTouches[0].clientY;
-                      const diff = startY - endY;
-                      const current =
-                        parseInt(
-                          formData[
-                            currentStep.key as keyof typeof formData
-                          ] as string,
-                        ) || 0;
+                  const handleTouchMove = (moveEvent: TouchEvent) => {
+                    const diff = startY - moveEvent.touches[0].clientY;
 
-                      if (Math.abs(diff) > 50) {
-                        const direction = diff > 0 ? 1 : -1;
-                        const newValue = current + direction;
+                    if (Math.abs(diff) < 25) return;
 
-                        if (
-                          currentStep.key === "age" &&
-                          newValue >= 18 &&
-                          newValue <= 80
-                        ) {
-                          handleInputChange(currentStep.key, newValue);
-                          setLastSwipeTime(now);
-                        } else if (
-                          currentStep.key === "weight" &&
-                          newValue >= 40 &&
-                          newValue <= 200
-                        ) {
-                          handleInputChange(currentStep.key, newValue);
-                          setLastSwipeTime(now);
-                        } else if (
-                          currentStep.key === "height" &&
-                          newValue >= 140 &&
-                          newValue <= 220
-                        ) {
-                          handleInputChange(currentStep.key, newValue);
-                          setLastSwipeTime(now);
-                        }
-                      }
+                    const now = Date.now();
+                    if (now - lastSwipeTime < SWIPE_DELAY) return;
 
-                      document.removeEventListener("touchend", handleTouchEnd);
-                    };
+                    const current =
+                      parseInt(
+                        formData[
+                          currentStep.key as keyof typeof formData
+                        ] as string,
+                      ) || 0;
 
-                    document.addEventListener("touchend", handleTouchEnd);
-                  }
+                    const stepSize = Math.round(diff / 40);
+
+                    const newValue = current + stepSize;
+
+                    let shouldUpdate = false;
+
+                    if (
+                      currentStep.key === "age" &&
+                      newValue >= 18 &&
+                      newValue <= 80
+                    )
+                      shouldUpdate = true;
+
+                    if (
+                      currentStep.key === "weight" &&
+                      newValue >= 40 &&
+                      newValue <= 200
+                    )
+                      shouldUpdate = true;
+
+                    if (
+                      currentStep.key === "height" &&
+                      newValue >= 140 &&
+                      newValue <= 220
+                    )
+                      shouldUpdate = true;
+
+                    if (shouldUpdate) {
+                      handleInputChange(currentStep.key, newValue);
+                      setLastSwipeTime(now);
+                    }
+                  };
+
+                  const handleTouchEnd = () => {
+                    document.removeEventListener("touchmove", handleTouchMove);
+                    document.removeEventListener("touchend", handleTouchEnd);
+                  };
+
+                  document.addEventListener("touchmove", handleTouchMove, {
+                    passive: false,
+                  });
+
+                  document.addEventListener("touchend", handleTouchEnd);
                 }}
               >
-                {/* Top faded value */}
-                <div className="text-2xl font-bold text-gray-400 opacity-40 mb-1 transition-all">
+                <div className="text-2xl font-bold text-gray-400 opacity-40 mb-1">
                   {parseInt(
                     formData[
                       currentStep.key as keyof typeof formData
                     ] as string,
-                  ) - 1 || 0}
+                  ) - 1}
                 </div>
 
-                {/* Current value - highlighted */}
                 <div className="text-6xl font-black text-blue-600 dark:text-blue-400 mb-3">
                   {formData[currentStep.key as keyof typeof formData]}
                 </div>
+
                 <p className="text-base text-gray-600 dark:text-gray-400 font-medium">
                   {currentStep.key === "age" && "Yoshingiz"}
                   {currentStep.key === "weight" && "kg"}
                   {currentStep.key === "height" && "cm"}
                 </p>
 
-                {/* Bottom faded value */}
-                <div className="text-3xl font-bold text-gray-400 opacity-40 transition-all">
+                <div className="text-3xl font-bold text-gray-400 opacity-40">
                   {parseInt(
                     formData[
                       currentStep.key as keyof typeof formData
                     ] as string,
-                  ) + 1 || 0}
+                  ) + 1}
                 </div>
               </div>
             </div>
@@ -404,29 +431,33 @@ export const Onboarding: React.FC<{ telegramId: string | null }> = ({
               {[
                 {
                   value: 0,
-                  label: "Deyarli qilmayman",
-                  emoji: "😴",
+                  label: "Mashq qilmayman",
+                  desc: "Ko‘p vaqt o‘tirib ishlayman",
+                  emoji: "🛋️",
                   color: "from-gray-400 to-gray-500",
                 },
                 {
-                  value: 3,
-                  label: "Ba'zan mashq qilaman",
-                  emoji: "💪",
-                  color: "from-yellow-400 to-yellow-500",
+                  value: 2,
+                  label: "Yengil mashqlar",
+                  desc: "Haftasiga 1-3 marta",
+                  emoji: "🚶",
+                  color: "from-green-400 to-emerald-500",
                 },
                 {
                   value: 4,
-                  label: "Haftasiga bir necha marta mashq qilaman",
-                  emoji: "🔥",
-                  color: "from-purple-400 to-purple-500",
+                  label: "O‘rtacha faol",
+                  desc: "Haftasiga 3-5 marta",
+                  emoji: "💪",
+                  color: "from-blue-400 to-indigo-500",
                 },
                 {
                   value: 6,
-                  label: "Professional sportchi",
-                  emoji: "🚀",
-                  color: "from-purple-400 to-purple-500",
+                  label: "Juda faol",
+                  desc: "Har kuni yoki sportchi",
+                  emoji: "🏋️",
+                  color: "from-purple-500 to-pink-500",
                 },
-              ].map(({ value, label, emoji, color }) => (
+              ].map(({ value, label, emoji, color, desc }) => (
                 <button
                   key={value}
                   onClick={() =>
@@ -435,12 +466,16 @@ export const Onboarding: React.FC<{ telegramId: string | null }> = ({
                   className={`w-full p-5 rounded-2xl transition-all transform ${
                     formData.workoutFrequency === value.toString()
                       ? `bg-gradient-to-r ${color} text-white shadow-lg scale-105`
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200"
                   }`}
                 >
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
                     <span className="text-3xl">{emoji}</span>
-                    <span className="font-semibold text-base">{label}</span>
+
+                    <div className="text-left flex-1">
+                      <p className="font-semibold text-base">{label}</p>
+                      <p className="text-sm opacity-80">{desc}</p>
+                    </div>
                   </div>
                 </button>
               ))}
@@ -449,31 +484,29 @@ export const Onboarding: React.FC<{ telegramId: string | null }> = ({
 
           {currentStep.type === "goal" && (
             <div className="space-y-3">
-              {(
-                [
-                  {
-                    value: "lose",
-                    emoji: "📉",
-                    title: "Vazn kamaytirish",
-                    desc: "Sog'lom yo'l bilan vazn yo'qotish",
-                    gradient: "from-purple-400 to-orange-500",
-                  },
-                  {
-                    value: "maintain",
-                    emoji: "⚖️",
-                    title: "Saqlash",
-                    desc: "Joriy vazningizni saqlang",
-                    gradient: "from-blue-400 to-cyan-500",
-                  },
-                  {
-                    value: "gain",
-                    emoji: "📈",
-                    title: "Vazn oshirish",
-                    desc: "Muskulni rivojlantirish va kuch",
-                    gradient: "from-green-400 to-emerald-500",
-                  },
-                ] as const
-              ).map(({ value, emoji, title, desc, gradient }) => (
+              {[
+                {
+                  value: "lose",
+                  emoji: "🔥",
+                  title: "Vazn kamaytirish",
+                  desc: "Yog'ni kamaytirish va ozish",
+                  gradient: "from-orange-400 to-red-500",
+                },
+                {
+                  value: "maintain",
+                  emoji: "⚖️",
+                  title: "Vaznni saqlash",
+                  desc: "Hozirgi vazningizni ushlab turish",
+                  gradient: "from-blue-400 to-cyan-500",
+                },
+                {
+                  value: "gain",
+                  emoji: "💪",
+                  title: "Muskul yig'ish",
+                  desc: "Vazn va muskul massasini oshirish",
+                  gradient: "from-green-400 to-emerald-500",
+                },
+              ].map(({ value, emoji, title, desc, gradient }) => (
                 <button
                   key={value}
                   onClick={() => handleInputChange("goal", value)}
@@ -485,6 +518,7 @@ export const Onboarding: React.FC<{ telegramId: string | null }> = ({
                 >
                   <div className="flex items-center gap-4">
                     <span className="text-4xl">{emoji}</span>
+
                     <div className="text-left flex-1">
                       <p className="font-bold text-base">{title}</p>
                       <p className="text-sm opacity-90">{desc}</p>

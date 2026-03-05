@@ -31,7 +31,7 @@ export class CalorieCalculator {
 
   static getActivityMultiplier(workoutFrequency: number): number {
     if (workoutFrequency === 0) return 1.2;
-    if (workoutFrequency <= 3) return 1.35;
+    if (workoutFrequency <= 2) return 1.35;
     if (workoutFrequency <= 4) return 1.45;
     if (workoutFrequency <= 6) return 1.6;
     return 1.2;
