@@ -20,9 +20,7 @@ export class MealController {
       const { date } = req.body;
 
       if (!req.file) {
-        return res.status(400).json({
-          error: "Rasm yuklanmadi. Iltimos, ovqat rasmini yuboring.",
-        });
+        return res.status(400).json({ error: "Rasm yuklanmadi" });
       }
 
       const user = await User.findById(userId);
@@ -78,7 +76,7 @@ export class MealController {
 
       if (!isFoodCandidate) {
         return res.status(400).json({
-          error: "Rasmda ovqat aniqlanmadi. Iltimos, ovqat rasmini yuklang.",
+          error: "Iltimos, ovqat tasvirini yuboring.",
           isFood: false,
         });
       }
@@ -88,8 +86,7 @@ export class MealController {
 
       if (!aiResult.isFood) {
         return res.status(400).json({
-          error:
-            "Yuklangan rasm ovqatga o‘xshamaydi. Iltimos, ovqat tasvirini yuboring.",
+          error: "Iltimos, ovqat tasvirini yuboring.",
           isFood: false,
         });
       }
