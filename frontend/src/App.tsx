@@ -24,7 +24,7 @@ export const App: React.FC = () => {
   } = useAppStore();
   const { toasts, removeToast } = useToast();
   const [telegramId, setTelegramId] = useState<string | null>(null);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(false);
   const [currentPage, setCurrentPage] = useState<
     "dashboard" | "meals" | "stats" | "profile"
   >("dashboard");
