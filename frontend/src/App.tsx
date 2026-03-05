@@ -58,6 +58,7 @@ export const App: React.FC = () => {
         // Check for Telegram
         initTelegramWebApp();
         const id = getTelegramUserId();
+        console.log("Telegram ID:", id);
         if (id) {
           setTelegramId(id);
 
