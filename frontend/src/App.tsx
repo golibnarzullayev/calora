@@ -24,7 +24,7 @@ export const App: React.FC = () => {
   } = useAppStore();
   const { toasts, removeToast } = useToast();
   const [telegramId, setTelegramId] = useState<string | null>(null);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(false);
   const [currentPage, setCurrentPage] = useState<
     "dashboard" | "meals" | "stats" | "profile"
   >("dashboard");
@@ -105,17 +105,25 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="h-screen bg-white flex flex-col overflow-hidden">
-      <div className="flex-1 overflow-y-auto">
-        {currentPage === "dashboard" && <Dashboard />}
-        {currentPage === "meals" && <Meals onMealClick={setSelectedMeal} />}
-        {currentPage === "stats" && <Stats />}
-        {currentPage === "profile" && <Profile />}
-      </div>
-      <Navigation currentPage={currentPage} onPageChange={setCurrentPage} />
-      <ToastContainer toasts={toasts} onClose={removeToast} />
-    </div>
-  );
+  <div className="h-[100dvh] flex flex-col">
+    <main 
+      className="flex-1 overflow-y-auto"
+      style={{ paddingBottom: "calc(64px + env(safe-area-inset-bottom))" }}
+    >
+      {currentPage === "dashboard" && <Dashboard />}
+      {currentPage === "meals" && <Meals onMealClick={setSelectedMeal} />}
+      {currentPage === "stats" && <Stats />}
+      {currentPage === "profile" && <Profile />}
+    </main>
+
+    <Navigation
+      currentPage={currentPage}
+      onPageChange={setCurrentPage}
+    />
+
+    <ToastContainer toasts={toasts} onClose={removeToast} />
+  </div>
+);
 };
 
 export default App;

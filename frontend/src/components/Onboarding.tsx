@@ -11,7 +11,7 @@ export const Onboarding: React.FC<{ telegramId: string | null }> = ({
   telegramId,
 }) => {
   const [step, setStep] = useState(0);
-  const [isLoginMode, setIsLoginMode] = useState(true);
+  const [isLoginMode, setIsLoginMode] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
