@@ -246,22 +246,24 @@ Your response MUST:
 
 If the dish cannot be identified with confidence → return isFood=false.`;
 
-      const response = await this.model.generateContent([
-        {
-          role: "user",
-          parts: [
-            {
-              inlineData: {
-                data: base64Image,
-                mimeType: mimeType,
+      const response = await this.model.generateContent({
+        contents: [
+          {
+            role: "user",
+            parts: [
+              {
+                inlineData: {
+                  data: base64Image,
+                  mimeType: mimeType,
+                },
               },
-            },
-            {
-              text: prompt,
-            },
-          ],
-        },
-      ]);
+              {
+                text: prompt,
+              },
+            ],
+          },
+        ],
+      });
 
       const text = response.response.text();
       const jsonMatch = text.match(/\{[\s\S]*\}/);
