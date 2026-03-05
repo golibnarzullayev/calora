@@ -5,7 +5,6 @@ import { User } from "../models/User.js";
 import { GeminiService } from "../services/GeminiService.js";
 import { R2Service } from "../services/R2Service.js";
 import mongoose from "mongoose";
-import { FoodPreClassifier } from "../services/FoodPreClassifier.js";
 import { FoodCache } from "../services/FoodCache.js";
 import { ImageHashService } from "../services/ImageHashService.js";
 import fs from "fs";
@@ -66,18 +65,6 @@ export class MealController {
         return res.json({
           data: { meal: meal.toObject() },
           message: "Meal added successfully",
-        });
-      }
-
-      const preClassifier = new FoodPreClassifier();
-      await preClassifier.init();
-
-      const isFoodCandidate = await preClassifier.isLikelyFood(req.file.path);
-
-      if (!isFoodCandidate) {
-        return res.status(400).json({
-          error: "Iltimos, ovqat tasvirini yuboring.",
-          isFood: false,
         });
       }
 
