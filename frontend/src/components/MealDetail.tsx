@@ -95,7 +95,7 @@ export const MealDetail: React.FC<MealDetailProps> = ({
             <span className="text-5xl font-black">
               {meal.aiResult.calories}
             </span>
-            <span className="text-xl opacity-75">kcal</span>
+            <span className="text-xl opacity-75">kkal</span>
           </div>
         </div>
 
@@ -198,7 +198,7 @@ export const MealDetail: React.FC<MealDetailProps> = ({
                 Jami Kaloriya
               </span>
               <span className="font-semibold text-gray-900 dark:text-white">
-                {meal.aiResult.calories} kcal
+                {meal.aiResult.calories} kkal
               </span>
             </div>
 

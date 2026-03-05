@@ -78,7 +78,7 @@ export const Stats: React.FC = () => {
                   {dailyStatsData.totalCalories}
                 </p>
                 <p className="text-blue-600 dark:text-blue-400 text-xs mt-1 font-semibold">
-                  kcal
+                  kkal
                 </p>
               </div>
               <div className="bg-gradient-to-br from-orange-400 to-amber-500 p-4 rounded-2xl">
