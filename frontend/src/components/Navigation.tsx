@@ -19,24 +19,44 @@ export const Navigation: React.FC<NavigationProps> = ({
   ];
 
   return (
-    <nav 
-      className="fixed bottom-0 left-0 right-0 h-20 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 flex justify-around items-center shadow-lg pt-2"
+    <nav
+      className="fixed bottom-0 left-0 right-0 h-[78px] backdrop-blur-xl bg-white/80 dark:bg-gray-900/80 border-t border-gray-200 dark:border-gray-700 flex justify-around items-center"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      {items.map(({ id, label, icon: Icon }) => (
-        <button
-          key={id}
-          onClick={() => onPageChange(id)}
-          className={`flex flex-col items-center gap-0.5 py-1 px-3 transition-all ${
-            currentPage === id
-              ? "text-blue-500 dark:text-blue-400"
-              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-          }`}
-        >
-          <Icon size={20} />
-          <span className="text-[10px] font-medium">{label}</span>
-        </button>
-      ))}
+      {items.map(({ id, label, icon: Icon }) => {
+        const active = currentPage === id;
+
+        return (
+          <button
+            key={id}
+            onClick={() => onPageChange(id)}
+            className="flex flex-col items-center justify-center gap-1 px-4 py-2 relative"
+          >
+            {active && (
+              <div className="absolute -top-1 w-10 h-10 rounded-full bg-blue-500/15 dark:bg-blue-400/15 blur-md" />
+            )}
+
+            <Icon
+              size={22}
+              className={`transition ${
+                active
+                  ? "text-blue-500 dark:text-blue-400 scale-110"
+                  : "text-gray-500 dark:text-gray-400"
+              }`}
+            />
+
+            <span
+              className={`text-[11px] font-medium ${
+                active
+                  ? "text-blue-500 dark:text-blue-400"
+                  : "text-gray-500 dark:text-gray-400"
+              }`}
+            >
+              {label}
+            </span>
+          </button>
+        );
+      })}
     </nav>
   );
 };
