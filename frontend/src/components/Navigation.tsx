@@ -20,8 +20,10 @@ export const Navigation: React.FC<NavigationProps> = ({
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 h-[78px] backdrop-blur-xl bg-white/80 dark:bg-gray-900/80 border-t border-gray-200 dark:border-gray-700 flex justify-around items-center"
-      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      className="fixed bottom-0 left-0 right-0 min-h-[72px] bg-gray-900 border-t border-gray-700 flex justify-around items-center z-50"
+      style={{
+        paddingBottom: "env(safe-area-inset-bottom)",
+      }}
     >
       {items.map(({ id, label, icon: Icon }) => {
         const active = currentPage === id;
@@ -30,26 +32,18 @@ export const Navigation: React.FC<NavigationProps> = ({
           <button
             key={id}
             onClick={() => onPageChange(id)}
-            className="flex flex-col items-center justify-center gap-1 px-4 py-2 relative"
+            className="flex flex-col items-center justify-center gap-1 px-4 py-2"
           >
-            {active && (
-              <div className="absolute -top-1 w-10 h-10 rounded-full bg-blue-500/15 dark:bg-blue-400/15 blur-md" />
-            )}
-
             <Icon
               size={22}
-              className={`transition ${
-                active
-                  ? "text-blue-500 dark:text-blue-400 scale-110"
-                  : "text-gray-500 dark:text-gray-400"
+              className={`transition-colors ${
+                active ? "text-blue-400" : "text-gray-400"
               }`}
             />
 
             <span
               className={`text-[11px] font-medium ${
-                active
-                  ? "text-blue-500 dark:text-blue-400"
-                  : "text-gray-500 dark:text-gray-400"
+                active ? "text-blue-400" : "text-gray-400"
               }`}
             >
               {label}
