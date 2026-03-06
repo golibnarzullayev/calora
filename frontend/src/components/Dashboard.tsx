@@ -170,7 +170,7 @@ export const Dashboard: React.FC = () => {
       <button
         onClick={() => fileInputRef.current?.click()}
         disabled={uploadMealMutation.isPending}
-        className="fixed bottom-28 right-2 bg-gradient-to-br from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 disabled:opacity-50 text-white rounded-full p-4 shadow-xl hover:shadow-2xl flex items-center gap-2 transition-all"
+        className="fixed bottom-36 right-2 bg-gradient-to-br from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 disabled:opacity-50 text-white rounded-full p-4 shadow-xl hover:shadow-2xl flex items-center gap-2 transition-all"
       >
         {uploadMealMutation.isPending ? (
           <div className="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent"></div>
