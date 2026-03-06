@@ -121,7 +121,7 @@ export const App: React.FC = () => {
     <main
       className="flex-1 overflow-y-auto"
       style={{
-        paddingBottom: "calc(72px + env(safe-area-inset-bottom))",
+        paddingBottom: "max(72px, env(safe-area-inset-bottom))",
       }}
     >
       {currentPage === "dashboard" && <Dashboard />}
