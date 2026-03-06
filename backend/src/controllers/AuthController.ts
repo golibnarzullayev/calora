@@ -8,35 +8,50 @@ const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
 export class AuthController {
   static async register(req: Request, res: Response) {
-    try {
-      const {
-        firstName,
-        lastName,
-        phoneNumber,
-        password,
-        age,
-        weight,
-        height,
-        workoutFrequency,
-        goal,
-      } = req.body;
+  try {
+    const {
+      firstName,
+      lastName,
+      phoneNumber,
+      password,
+      age,
+      weight,
+      height,
+      workoutFrequency,
+      goal,
+    } = req.body;
 
-      if (!firstName || !lastName || !phoneNumber || !password) {
-        return res
-          .status(400)
-          .json({ error: "Majburiy maydonlarni to'ldiring" });
-      }
+    if (!firstName || !lastName || !phoneNumber || !password) {
+      return res
+        .status(400)
+        .json({ error: "Majburiy maydonlarni to'ldiring" });
+    }
 
-      const existingUser = await User.findOne({ phoneNumber });
-      if (existingUser) {
+    let user = await User.findOne({ phoneNumber });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    if (user) {
+      // Agar user bor lekin password yo'q bo'lsa -> update qilamiz
+      if (!user.password) {
+        user.firstName = firstName;
+        user.lastName = lastName;
+        user.password = hashedPassword;
+        user.age = age;
+        user.weight = weight;
+        user.height = height;
+        user.workoutFrequency = workoutFrequency;
+        user.goal = goal;
+
+        await user.save();
+      } else {
         return res.status(400).json({
           error: "Bu telefon raqami bilan foydalanuvchi allaqachon mavjud",
         });
       }
-
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      const user = new User({
+    } else {
+      // Yangi user yaratish
+      user = new User({
         firstName,
         lastName,
         phoneNumber,
@@ -49,43 +64,44 @@ export class AuthController {
       });
 
       await user.save();
-
-      const token = jwt.sign(
-        { userId: user._id, phoneNumber: user.phoneNumber },
-        JWT_SECRET,
-        { expiresIn: "30d" },
-      );
-
-      const calorieResult = CalorieCalculator.calculate({
-        age,
-        weight,
-        height,
-        workoutFrequency,
-        goal,
-      });
-
-      res.json({
-        token,
-        user: {
-          _id: user._id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          phoneNumber: user.phoneNumber,
-          age: user.age,
-          weight: user.weight,
-          height: user.height,
-          workoutFrequency: user.workoutFrequency,
-          goal: user.goal,
-        },
-        calorieTarget: calorieResult,
-      });
-    } catch (error) {
-      console.error("Registration error:", error);
-      res
-        .status(500)
-        .json({ error: "Foydalanuvchini ro'yxatdan o'tkazishda xato" });
     }
+
+    const token = jwt.sign(
+      { userId: user._id, phoneNumber: user.phoneNumber },
+      JWT_SECRET,
+      { expiresIn: "30d" }
+    );
+
+    const calorieResult = CalorieCalculator.calculate({
+      age,
+      weight,
+      height,
+      workoutFrequency,
+      goal,
+    });
+
+    res.json({
+      token,
+      user: {
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phoneNumber: user.phoneNumber,
+        age: user.age,
+        weight: user.weight,
+        height: user.height,
+        workoutFrequency: user.workoutFrequency,
+        goal: user.goal,
+      },
+      calorieTarget: calorieResult,
+    });
+  } catch (error) {
+    console.error("Registration error:", error);
+    res
+      .status(500)
+      .json({ error: "Foydalanuvchini ro'yxatdan o'tkazishda xato" });
   }
+}
 
   static async login(req: Request, res: Response) {
     try {
