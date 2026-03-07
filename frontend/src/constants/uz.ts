@@ -5,6 +5,7 @@ export const UZ = {
     meals: "Ovqatlarim",
     stats: "Statistika",
     profile: "Profil",
+    subscription: "Obunalar",
   },
 
   // Dashboard

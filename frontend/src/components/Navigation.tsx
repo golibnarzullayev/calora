@@ -1,10 +1,18 @@
 import React from "react";
-import { Home, Apple, BarChart3, User } from "lucide-react";
+import { Home, Apple, BarChart3, User, Gift } from "lucide-react";
 import { UZ } from "../constants/uz";
 
 interface NavigationProps {
-  currentPage: "dashboard" | "meals" | "stats" | "profile";
-  onPageChange: (page: "dashboard" | "meals" | "stats" | "profile") => void;
+  currentPage:
+    | "dashboard"
+    | "meals"
+    | "stats"
+    | "profile"
+    | "subscriptions"
+    | "payment-callback";
+  onPageChange: (
+    page: "dashboard" | "meals" | "stats" | "profile" | "subscriptions",
+  ) => void;
 }
 
 export const Navigation: React.FC<NavigationProps> = ({
@@ -15,6 +23,7 @@ export const Navigation: React.FC<NavigationProps> = ({
     { id: "dashboard" as const, label: UZ.nav.dashboard, icon: Home },
     { id: "meals" as const, label: UZ.nav.meals, icon: Apple },
     { id: "stats" as const, label: UZ.nav.stats, icon: BarChart3 },
+    { id: "subscriptions" as const, label: UZ.nav.subscription, icon: Gift },
     { id: "profile" as const, label: UZ.nav.profile, icon: User },
   ];
 

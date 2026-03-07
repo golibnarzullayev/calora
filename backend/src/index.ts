@@ -6,17 +6,21 @@ import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import mealRoutes from "./routes/mealRoutes.js";
 import statsRoutes from "./routes/statsRoutes.js";
+import subscriptionRoutes from "./routes/subscriptionRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 import { setupTelegramBot } from "./telegram/bot.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors({
-  origin: "*",
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: false
-}));
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: false,
+  }),
+);
 
 app.options("*", cors());
 
@@ -37,6 +41,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/meals", mealRoutes);
 app.use("/api/stats", statsRoutes);
+app.use("/api/subscriptions", subscriptionRoutes);
+app.use("/api/payments", paymentRoutes);
 
 app.get("/health", (req, res) => {
   res.json({ status: "ok" });

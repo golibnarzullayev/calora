@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAppStore } from "../store/useAppStore";
-import { mealAPI } from "../services/api";
+import { mealAPI, subscriptionAPI } from "../services/api";
 import { UZ } from "../constants/uz";
 import { Trash2, Upload, Camera, ChevronRight } from "lucide-react";
 import { useMeals, useRefreshMeals } from "../hooks/useMeals";
@@ -11,18 +11,38 @@ import type { Meal } from "../store/useAppStore";
 
 interface MealsProps {
   onMealClick?: (meal: Meal) => void;
+  onNavigateToSubscriptions?: () => void;
 }
 
-export const Meals: React.FC<MealsProps> = ({ onMealClick }) => {
+export const Meals: React.FC<MealsProps> = ({
+  onMealClick,
+  onNavigateToSubscriptions,
+}) => {
   const { user } = useAppStore();
   const { success: showSuccess, error: showError } = useToast();
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>("");
+  const [hasSubscription, setHasSubscription] = useState<boolean | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const { data: meals = [] } = useMeals(user?._id || null);
   const refreshMeals = useRefreshMeals();
+
+  useEffect(() => {
+    const checkSubscription = async () => {
+      try {
+        const response = await subscriptionAPI.hasActiveSubscription();
+        setHasSubscription(response.data.hasActive);
+      } catch (error) {
+        setHasSubscription(false);
+      }
+    };
+
+    if (user?._id) {
+      checkSubscription();
+    }
+  }, [user?._id]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -39,6 +59,12 @@ export const Meals: React.FC<MealsProps> = ({ onMealClick }) => {
   const handleUpload = async () => {
     if (!selectedFile || !user) return;
 
+    if (!hasSubscription) {
+      showError("Rasm yuklash uchun Premium obuna kerak");
+      onNavigateToSubscriptions?.();
+      return;
+    }
+
     setLoading(true);
     try {
       const formData = new FormData();
@@ -49,9 +75,14 @@ export const Meals: React.FC<MealsProps> = ({ onMealClick }) => {
       setPreview("");
       refreshMeals();
       showSuccess(UZ.success.mealAdded);
-    } catch (error) {
-      const errorMsg = getErrorMessage(error);
-      showError(errorMsg);
+    } catch (error: any) {
+      if (error?.response?.data?.requiresSubscription) {
+        showError("Rasm yuklash uchun obuna sotib olish kerak.");
+        onNavigateToSubscriptions?.();
+      } else {
+        const errorMsg = getErrorMessage(error);
+        showError(errorMsg);
+      }
     } finally {
       setLoading(false);
     }
@@ -82,17 +113,32 @@ export const Meals: React.FC<MealsProps> = ({ onMealClick }) => {
         <div className="mb-6">
           {!preview ? (
             <div
-              onClick={() => fileInputRef.current?.click()}
-              className="relative overflow-hidden rounded-3xl cursor-pointer group"
+              onClick={() => {
+                if (!hasSubscription) {
+                  showError("Rasm yuklash uchun Premium obuna kerak");
+                  onNavigateToSubscriptions?.();
+                  return;
+                }
+                fileInputRef.current?.click();
+              }}
+              className={`relative overflow-hidden rounded-3xl cursor-pointer group ${
+                !hasSubscription ? "opacity-50 pointer-events-none" : ""
+              }`}
             >
               <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <div className="relative bg-gradient-to-br from-green-400 to-emerald-500 dark:from-green-600 dark:to-emerald-700 rounded-3xl p-8 text-white shadow-xl hover:shadow-2xl transition-all">
+              <div
+                className={`relative rounded-3xl p-8 text-white shadow-xl hover:shadow-2xl transition-all ${
+                  !hasSubscription
+                    ? "bg-gradient-to-br from-gray-400 to-gray-500 dark:from-gray-600 dark:to-gray-700"
+                    : "bg-gradient-to-br from-green-400 to-emerald-500 dark:from-green-600 dark:to-emerald-700"
+                }`}
+              >
                 <div className="flex flex-col items-center justify-center">
                   <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 mb-4">
                     <Camera size={40} className="text-white" />
                   </div>
                   <span className="text-lg font-bold mb-1">
-                    {UZ.meals.uploadImage}
+                    {!hasSubscription ? "Obuna kerak" : UZ.meals.uploadImage}
                   </span>
                 </div>
               </div>
@@ -102,6 +148,7 @@ export const Meals: React.FC<MealsProps> = ({ onMealClick }) => {
                 accept="image/*"
                 onChange={handleFileSelect}
                 className="hidden"
+                disabled={!hasSubscription}
               />
             </div>
           ) : (

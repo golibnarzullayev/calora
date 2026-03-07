@@ -1,17 +1,40 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useAppStore } from "../store/useAppStore";
 import { UZ } from "../constants/uz";
 import { Camera } from "lucide-react";
 import { useMeals, useDailyStats, useUploadMeal } from "../hooks/useQueries";
+import { subscriptionAPI } from "../services/api";
 import { formatDateWithDay } from "../utils/dateFormatter";
 import type { Meal } from "../store/useAppStore";
 import { getErrorMessage } from "../utils/errorHandler";
 import { useToast } from "../context/ToastContext";
 
-export const Dashboard: React.FC = () => {
+interface DashboardProps {
+  onNavigateToSubscriptions?: () => void;
+}
+
+export const Dashboard: React.FC<DashboardProps> = ({
+  onNavigateToSubscriptions,
+}) => {
   const { user, calorieTarget } = useAppStore();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const { error: showError } = useToast();
+  const [hasSubscription, setHasSubscription] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkSubscription = async () => {
+      try {
+        const response = await subscriptionAPI.hasActiveSubscription();
+        setHasSubscription(response.data.hasActive);
+      } catch (error) {
+        setHasSubscription(false);
+      }
+    };
+
+    if (user?._id) {
+      checkSubscription();
+    }
+  }, [user?._id]);
 
   const { data: meals = [] } = useMeals(user?._id || null);
   const { data: dailyStats } = useDailyStats(user?._id || null);
@@ -32,9 +55,14 @@ export const Dashboard: React.FC = () => {
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
-    } catch (error) {
-      const errorMsg = getErrorMessage(error);
-      showError(errorMsg);
+    } catch (error: any) {
+      if (error?.response?.data?.requiresSubscription) {
+        showError("Rasm yuklash uchun obuna sotib olish kerak.");
+        onNavigateToSubscriptions?.();
+      } else {
+        const errorMsg = getErrorMessage(error);
+        showError(errorMsg);
+      }
     }
   };
 
@@ -168,9 +196,20 @@ export const Dashboard: React.FC = () => {
 
       {/* Floating Action Button - Creative */}
       <button
-        onClick={() => fileInputRef.current?.click()}
-        disabled={uploadMealMutation.isPending}
-        className="fixed bottom-28 right-2 bg-gradient-to-br from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 disabled:opacity-50 text-white rounded-full p-4 shadow-xl hover:shadow-2xl flex items-center gap-2 transition-all"
+        onClick={() => {
+          if (!hasSubscription) {
+            showError("Rasm yuklash uchun Premium obuna kerak");
+            onNavigateToSubscriptions?.();
+            return;
+          }
+          fileInputRef.current?.click();
+        }}
+        disabled={uploadMealMutation.isPending || !hasSubscription}
+        className={`fixed bottom-28 right-2 text-white rounded-full p-4 shadow-xl hover:shadow-2xl flex items-center gap-2 transition-all ${
+          !hasSubscription
+            ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed"
+            : "bg-gradient-to-br from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700"
+        } disabled:opacity-50`}
       >
         {uploadMealMutation.isPending ? (
           <div className="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent"></div>

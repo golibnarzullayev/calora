@@ -6,6 +6,8 @@ import { Dashboard } from "./components/Dashboard";
 import { Meals } from "./components/Meals";
 import { Stats } from "./components/Stats";
 import { Profile } from "./components/Profile";
+import { Subscriptions } from "./components/Subscriptions";
+import { PaymentCallback } from "./components/PaymentCallback";
 import { MealDetail } from "./components/MealDetail";
 import { Navigation } from "./components/Navigation";
 import { ToastContainer } from "./components/Toast";
@@ -27,7 +29,12 @@ export const App: React.FC = () => {
   const [telegramId, setTelegramId] = useState<string | null>(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [currentPage, setCurrentPage] = useState<
-    "dashboard" | "meals" | "stats" | "profile"
+    | "dashboard"
+    | "meals"
+    | "stats"
+    | "profile"
+    | "subscriptions"
+    | "payment-callback"
   >("dashboard");
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
 
@@ -39,6 +46,13 @@ export const App: React.FC = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        // Check if on payment callback page
+        if (window.location.pathname === "/payment-callback") {
+          setCurrentPage("payment-callback");
+          setIsCheckingAuth(false);
+          return;
+        }
+
         // Check if user has web auth token
         const token = localStorage.getItem("authToken");
         if (token) {
@@ -58,7 +72,6 @@ export const App: React.FC = () => {
         // Check for Telegram
         initTelegramWebApp();
         const id = getTelegramUserId();
-        console.log("Telegram ID:", id);
         if (id) {
           setTelegramId(id);
 
@@ -102,6 +115,15 @@ export const App: React.FC = () => {
     );
   }
 
+  if (currentPage === "payment-callback") {
+    return (
+      <>
+        <PaymentCallback />
+        <ToastContainer toasts={toasts} onClose={removeToast} />
+      </>
+    );
+  }
+
   if (!isOnboarded || !storeUser) {
     return <Onboarding telegramId={telegramId || ""} />;
   }
@@ -124,10 +146,20 @@ export const App: React.FC = () => {
           paddingBottom: "max(72px, env(safe-area-inset-bottom))",
         }}
       >
-        {currentPage === "dashboard" && <Dashboard />}
-        {currentPage === "meals" && <Meals onMealClick={setSelectedMeal} />}
+        {currentPage === "dashboard" && (
+          <Dashboard
+            onNavigateToSubscriptions={() => setCurrentPage("subscriptions")}
+          />
+        )}
+        {currentPage === "meals" && (
+          <Meals
+            onMealClick={setSelectedMeal}
+            onNavigateToSubscriptions={() => setCurrentPage("subscriptions")}
+          />
+        )}
         {currentPage === "stats" && <Stats />}
         {currentPage === "profile" && <Profile />}
+        {currentPage === "subscriptions" && <Subscriptions />}
       </main>
 
       <Navigation currentPage={currentPage} onPageChange={setCurrentPage} />

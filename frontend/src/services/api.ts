@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API_BASE_URL =
-  import.meta.env.VITE_APP_API_URL || "http://localhost:3000/api";
+  import.meta.env.VITE_APP_API_URL || "http://localhost:4040/api";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -56,4 +56,24 @@ export const statsAPI = {
     }),
   getWeightProgress: (userId: string, days: number = 30) =>
     api.get(`/stats/${userId}/weight-progress`, { params: { days } }),
+};
+
+export const subscriptionAPI = {
+  getAllSubscriptions: () => api.get("/subscriptions/subscriptions"),
+  getSubscriptionById: (id: string) =>
+    api.get(`/subscriptions/subscriptions/${id}`),
+  getUserActiveSubscription: () => api.get("/subscriptions/user/subscription"),
+  getUserSubscriptionHistory: () =>
+    api.get("/subscriptions/user/subscription-history"),
+  hasActiveSubscription: () => api.get("/subscriptions/user/has-subscription"),
+  getUserFeatures: () => api.get("/subscriptions/user/features"),
+  createOrder: (subscriptionId: string) =>
+    api.post("/subscriptions/orders", { subscriptionId }),
+  getOrder: (orderId: string) => api.get(`/subscriptions/orders/${orderId}`),
+  getUserOrders: () => api.get("/subscriptions/user/orders"),
+};
+
+export const paymentAPI = {
+  getPaymentStatus: (orderId: string) =>
+    api.get(`/payments/payment-status/${orderId}`),
 };

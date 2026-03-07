@@ -25,9 +25,6 @@ export class FoodPreClassifier {
 
     const top1 = predictions[0];
 
-    // DEBUG uchun
-    // console.log(predictions);
-
     // Agar model ancha ishonch bilan aytsa
     if (top1.probability > 0.3) {
       if (!this.matches(top1.className, BLACKLIST)) {

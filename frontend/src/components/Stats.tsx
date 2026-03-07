@@ -1,15 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAppStore } from "../store/useAppStore";
 import { UZ } from "../constants/uz";
-import { Flame, Zap, Droplets, Activity } from "lucide-react";
+import { Flame, Zap, Droplets, Activity, Lock } from "lucide-react";
 import {
   useDailyStats,
   useMonthlyStats,
   useWeeklyStats,
 } from "../hooks/useQueries";
+import { subscriptionAPI } from "../services/api";
 
-export const Stats: React.FC = () => {
+interface StatsProps {
+  onNavigateToSubscriptions?: () => void;
+}
+
+export const Stats: React.FC<StatsProps> = ({ onNavigateToSubscriptions }) => {
   const { user } = useAppStore();
+  const [hasSubscription, setHasSubscription] = useState<boolean | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const checkSubscription = async () => {
+      try {
+        const response = await subscriptionAPI.hasActiveSubscription();
+        setHasSubscription(response.data.hasActive);
+      } catch (error) {
+        setHasSubscription(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user?._id) {
+      checkSubscription();
+    }
+  }, [user?._id]);
   const [timeframe, setTimeframe] = useState<"today" | "week" | "month">(
     "today",
   );
@@ -71,6 +95,40 @@ export const Stats: React.FC = () => {
     (timeframe === "today" && dailyLoading) ||
     (timeframe === "week" && weeklyLoading) ||
     (timeframe === "month" && monthlyLoading);
+
+  if (loading) {
+    return (
+      <div className="h-full flex items-center justify-center bg-gradient-to-b from-white via-blue-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (!hasSubscription) {
+    return (
+      <div className="h-full flex items-center justify-center bg-gradient-to-b from-white via-blue-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
+        <div className="max-w-md w-full">
+          <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-xl border border-gray-200 dark:border-gray-700 text-center">
+            <div className="bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 rounded-2xl p-6 mb-6 inline-block">
+              <Lock size={48} className="text-blue-600 dark:text-blue-400" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+              Statistika cheklangan
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              Statistikani ko'rish uchun obuna sotib olishingiz kerak
+            </p>
+            <button
+              onClick={() => onNavigateToSubscriptions?.()}
+              className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl font-semibold transition-all shadow-lg"
+            >
+              Obuna rejalarini ko'rish
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gradient-to-b from-white via-blue-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 h-full overflow-y-auto overflow-x-hidden">
