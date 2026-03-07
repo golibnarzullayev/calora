@@ -50,7 +50,7 @@ class OrderService {
     const amountInTiyn = Math.floor(amount * 100);
 
     return `${this.paymeCheckoutUrl}/${base64.encode(
-      `m=${merchantId};ac.order_id=${orderId};a=${amountInTiyn}`,
+      `m=${merchantId};ac.order_id=${orderId};a=${amountInTiyn};c=https://calora.gignite.uz`,
     )}`;
   }
 
