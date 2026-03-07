@@ -1,8 +1,8 @@
 import { isValidObjectId } from "mongoose";
-import { Order, OrderStatus } from "../models/Order";
-import { PaymeTransaction, PaymeState } from "../models/PaymeTransaction";
-import { Subscription } from "../models/Subscription";
-import { UserSubscription } from "../models/UserSubscription";
+import { Order, OrderStatus } from "../models/Order.js";
+import { PaymeTransaction, PaymeState } from "../models/PaymeTransaction.js";
+import { Subscription } from "../models/Subscription.js";
+import { UserSubscription } from "../models/UserSubscription.js";
 
 const TIMEOUT = 12 * 60 * 1000;
 
