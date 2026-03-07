@@ -1,3 +1,4 @@
+import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
 import { User } from "../models/User.js";
 import { CalorieCalculator } from "../services/CalorieCalculator.js";
@@ -109,7 +110,16 @@ export class UserController {
         goal: user.goal,
       });
 
+      const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+
+      const token = jwt.sign(
+        { userId: user._id, phoneNumber: user.phoneNumber },
+        JWT_SECRET,
+        { expiresIn: "30d" },
+      );
+
       res.json({
+        token,
         user: user.toObject(),
         calorieTarget: calorieResult,
       });

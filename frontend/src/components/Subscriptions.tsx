@@ -72,7 +72,9 @@ export const Subscriptions: React.FC = () => {
         error("Payme URL yaratilmadi");
       }
     } catch (err: any) {
-      error(err.response?.data?.error || "Order yaratishda xato");
+      error(
+        err.response?.data?.error || "Buyurtma yaratishda xatolik yuz berdi",
+      );
     } finally {
       setCreatingOrder(null);
     }
@@ -186,8 +188,6 @@ export const Subscriptions: React.FC = () => {
                 {subscription.discount > 0 && (
                   <div className="absolute top-4 right-4">
                     <div className="flex items-center gap-2 bg-yellow-400 text-black px-3 py-1 rounded-full text-xs font-bold shadow">
-                      <span>🔥 Eng mashhur</span>
-                      <span className="opacity-70">·</span>
                       <span>{subscription.discount}% chegirma</span>
                     </div>
                   </div>

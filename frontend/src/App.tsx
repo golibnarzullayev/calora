@@ -81,6 +81,7 @@ export const App: React.FC = () => {
               setUser(response.data.user);
               setCalorieTarget(response.data.calorieTarget);
               setOnboarded(true);
+              localStorage.setItem("authToken", response.data.token);
               return;
             }
           } catch (error) {
