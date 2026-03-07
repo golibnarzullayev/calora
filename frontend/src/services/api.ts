@@ -47,21 +47,8 @@ export const statsAPI = {
     api.get(`/stats/${userId}/daily`, {
       params: { date: date || new Date().toISOString().split("T")[0] },
     }),
-  getWeeklyStats: (userId: string, startDate?: string) =>
-    api.get(`/stats/${userId}/weekly`, {
-      params: {
-        startDate: startDate || new Date().toISOString().split("T")[0],
-      },
-    }),
-  getMonthlyStats: (userId: string, year?: number, month?: number) => {
-    const now = new Date();
-    return api.get(`/stats/${userId}/monthly`, {
-      params: {
-        year: year || now.getFullYear(),
-        month: month || now.getMonth() + 1,
-      },
-    });
-  },
+  getWeeklyStats: (userId: string) => api.get(`/stats/${userId}/weekly`),
+  getMonthlyStats: (userId: string) => api.get(`/stats/${userId}/monthly`),
   recordWeight: (userId: string, weight: number, date?: string) =>
     api.post(`/stats/${userId}/weight`, {
       weight,

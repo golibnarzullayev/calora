@@ -84,28 +84,24 @@ export const useDailyStats = (userId: string | null, date?: string) => {
   });
 };
 
-export const useWeeklyStats = (userId: string | null, startDate?: string) => {
+export const useWeeklyStats = (userId: string | null) => {
   return useQuery({
-    queryKey: ["weeklyStats", userId, startDate],
+    queryKey: ["weeklyStats", userId],
     queryFn: async () => {
       if (!userId) return [];
-      const response = await statsAPI.getWeeklyStats(userId, startDate);
+      const response = await statsAPI.getWeeklyStats(userId);
       return response.data.stats || [];
     },
     enabled: !!userId,
   });
 };
 
-export const useMonthlyStats = (
-  userId: string | null,
-  year?: number,
-  month?: number,
-) => {
+export const useMonthlyStats = (userId: string | null) => {
   return useQuery({
-    queryKey: ["monthlyStats", userId, year, month],
+    queryKey: ["monthlyStats", userId],
     queryFn: async () => {
       if (!userId) return [];
-      const response = await statsAPI.getMonthlyStats(userId, year, month);
+      const response = await statsAPI.getMonthlyStats(userId);
       return response.data.stats || [];
     },
     enabled: !!userId,

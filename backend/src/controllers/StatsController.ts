@@ -3,6 +3,11 @@ import { DailyStats } from "../models/DailyStats.js";
 import { Weight } from "../models/Weight.js";
 import { User } from "../models/User.js";
 
+import dayjs from "dayjs";
+import isoWeek from "dayjs/plugin/isoWeek";
+
+dayjs.extend(isoWeek);
+
 export class StatsController {
   static async getDailyStats(req: Request, res: Response) {
     try {
@@ -42,21 +47,18 @@ export class StatsController {
   static async getWeeklyStats(req: Request, res: Response) {
     try {
       const { userId } = req.params;
-      const { startDate } = req.query;
 
       const user = await User.findById(userId);
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }
 
-      const start = new Date(startDate as string);
-      start.setHours(0, 0, 0, 0);
-      const end = new Date(start);
-      end.setDate(end.getDate() + 7);
+      const start = dayjs().startOf("isoWeek").toDate();
+      const end = dayjs().endOf("isoWeek").toDate();
 
       const stats = await DailyStats.find({
         userId: user._id,
-        date: { $gte: start, $lt: end },
+        date: { $gte: start, $lte: end },
       }).sort({ date: 1 });
 
       res.json({ stats });
@@ -68,15 +70,14 @@ export class StatsController {
   static async getMonthlyStats(req: Request, res: Response) {
     try {
       const { userId } = req.params;
-      const { year, month } = req.query;
 
       const user = await User.findById(userId);
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }
 
-      const start = new Date(Number(year), Number(month) - 1, 1);
-      const end = new Date(Number(year), Number(month), 1);
+      const start = dayjs().startOf("month").toDate();
+      const end = dayjs().add(1, "month").startOf("month").toDate();
 
       const stats = await DailyStats.find({
         userId: user._id,
