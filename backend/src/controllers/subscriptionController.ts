@@ -2,7 +2,6 @@ import { Response } from "express";
 import { AuthRequest } from "../middleware/authMiddleware.js";
 import SubscriptionService from "../services/SubscriptionService.js";
 import OrderService from "../services/OrderService.js";
-import FeatureService from "../services/FeatureService.js";
 
 const subscriptionService = new SubscriptionService();
 const orderService = new OrderService();
@@ -169,19 +168,5 @@ export const getUserOrders = async (req: AuthRequest, res: Response) => {
     res.json(orders);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch user orders" });
-  }
-};
-
-export const getUserFeatures = async (req: AuthRequest, res: Response) => {
-  try {
-    const userId = req.user?.id;
-    if (!userId) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-
-    const userFeatures = await FeatureService.getAllUserFeatures(userId);
-    res.json(userFeatures);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch user features" });
   }
 };

@@ -25,11 +25,6 @@ router.get(
   authMiddleware,
   subscriptionController.hasActiveSubscription,
 );
-router.get(
-  "/user/features",
-  authMiddleware,
-  subscriptionController.getUserFeatures,
-);
 
 router.post("/orders", authMiddleware, subscriptionController.createOrder);
 router.get("/orders/:id", authMiddleware, subscriptionController.getOrder);

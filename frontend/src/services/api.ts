@@ -66,7 +66,6 @@ export const subscriptionAPI = {
   getUserSubscriptionHistory: () =>
     api.get("/subscriptions/user/subscription-history"),
   hasActiveSubscription: () => api.get("/subscriptions/user/has-subscription"),
-  getUserFeatures: () => api.get("/subscriptions/user/features"),
   createOrder: (subscriptionId: string) =>
     api.post("/subscriptions/orders", { subscriptionId }),
   getOrder: (orderId: string) => api.get(`/subscriptions/orders/${orderId}`),

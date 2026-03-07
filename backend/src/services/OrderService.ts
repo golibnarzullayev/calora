@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
+import utc from "dayjs/plugin/utc.js";
 import { Order, OrderStatus, IOrder } from "../models/Order.js";
 import { Subscription } from "../models/Subscription.js";
 import {

@@ -1,6 +1,5 @@
-import { UserSubscription } from '../models/UserSubscription.js';
-import { Subscription } from '../models/Subscription.js';
-import { SubscriptionFeature, FEATURE_LIMITS } from '../constants/features.js';
+import { UserSubscription } from "../models/UserSubscription.js";
+import { SubscriptionFeature, FEATURE_LIMITS } from "../constants/features.js";
 
 class FeatureService {
   async getUserFeatures(userId: string): Promise<SubscriptionFeature[]> {
@@ -8,7 +7,7 @@ class FeatureService {
       userId,
       isActive: true,
       endDate: { $gt: new Date() },
-    }).populate('subscriptionId');
+    }).populate("subscriptionId");
 
     if (!userSubscription) {
       return [];
@@ -18,7 +17,10 @@ class FeatureService {
     return subscription.features || [];
   }
 
-  async hasFeature(userId: string, feature: SubscriptionFeature): Promise<boolean> {
+  async hasFeature(
+    userId: string,
+    feature: SubscriptionFeature,
+  ): Promise<boolean> {
     const features = await this.getUserFeatures(userId);
     return features.includes(feature);
   }
@@ -57,7 +59,7 @@ class FeatureService {
       userId,
       isActive: true,
       endDate: { $gt: new Date() },
-    }).populate('subscriptionId');
+    }).populate("subscriptionId");
 
     if (!userSubscription) {
       return {
