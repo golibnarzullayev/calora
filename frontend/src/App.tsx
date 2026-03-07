@@ -168,7 +168,9 @@ export const App: React.FC = () => {
           />
         )}
 
-        {currentPage === "profile" && <Profile />}
+        {currentPage === "profile" && (
+          <Profile onNavigateToAdmin={() => setCurrentPage("admin")} />
+        )}
 
         {currentPage === "subscriptions" && <Subscriptions />}
 

@@ -1,7 +1,6 @@
 import React from "react";
-import { Home, Apple, BarChart3, User, Gift, Shield } from "lucide-react";
+import { Home, Apple, BarChart3, User, Gift } from "lucide-react";
 import { UZ } from "../constants/uz";
-import { useAppStore } from "../store/useAppStore";
 
 interface NavigationProps {
   currentPage:
@@ -27,17 +26,12 @@ export const Navigation: React.FC<NavigationProps> = ({
   currentPage,
   onPageChange,
 }) => {
-  const { user } = useAppStore();
-
   const items = [
     { id: "dashboard" as const, label: UZ.nav.dashboard, icon: Home },
     { id: "meals" as const, label: UZ.nav.meals, icon: Apple },
     { id: "stats" as const, label: UZ.nav.stats, icon: BarChart3 },
     { id: "subscriptions" as const, label: UZ.nav.subscription, icon: Gift },
     { id: "profile" as const, label: UZ.nav.profile, icon: User },
-    ...(user?.isAdmin
-      ? [{ id: "admin" as const, label: "Admin", icon: Shield }]
-      : []),
   ];
 
   return (

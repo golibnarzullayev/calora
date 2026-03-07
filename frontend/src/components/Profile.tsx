@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useAppStore } from "../store/useAppStore";
 import { UZ } from "../constants/uz";
-import { LogOut, Edit2, Save, Moon, Sun } from "lucide-react";
+import { LogOut, Edit2, Save, Moon, Sun, Settings } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 import { LogoutModal } from "./LogoutModal";
 import {
@@ -10,7 +10,11 @@ import {
   useUpdateWeight,
 } from "../hooks/useQueries";
 
-export const Profile: React.FC = () => {
+interface IProps {
+  onNavigateToAdmin: () => void;
+}
+
+export const Profile: React.FC<IProps> = ({ onNavigateToAdmin }) => {
   const { user: storeUser, reset, logout } = useAppStore();
   const { theme, toggleTheme } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
@@ -327,6 +331,17 @@ export const Profile: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Admin Panel Button */}
+        {user?.isAdmin && (
+          <button
+            onClick={() => onNavigateToAdmin()}
+            className="w-full px-4 py-4 bg-gradient-to-r from-purple-600 to-indigo-700 dark:from-purple-700 dark:to-indigo-800 hover:from-purple-700 hover:to-indigo-800 text-white rounded-2xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl mb-3"
+          >
+            <Settings size={20} />
+            Admin Panel
+          </button>
+        )}
 
         {/* Logout Button - Creative */}
         <button
