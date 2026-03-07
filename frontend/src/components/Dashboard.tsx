@@ -1,10 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useAppStore } from "../store/useAppStore";
-import { UZ } from "../constants/uz";
 import { Camera } from "lucide-react";
-import { useMeals, useDailyStats, useUploadMeal } from "../hooks/useQueries";
-import { subscriptionAPI } from "../services/api";
+import {
+  useHasActiveSubscription,
+  useMeals,
+  useDailyStats,
+  useUploadMeal,
+} from "../hooks/useQueries";
 import { formatDateWithDay } from "../utils/dateFormatter";
+import { UZ } from "../constants/uz";
 import type { Meal } from "../store/useAppStore";
 import { getErrorMessage } from "../utils/errorHandler";
 import { useToast } from "../context/ToastContext";
@@ -19,23 +23,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const { user, calorieTarget } = useAppStore();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const { error: showError } = useToast();
-  const [hasSubscription, setHasSubscription] = useState<boolean | null>(null);
 
-  useEffect(() => {
-    const checkSubscription = async () => {
-      try {
-        const response = await subscriptionAPI.hasActiveSubscription();
-        setHasSubscription(response.data.hasActive);
-      } catch (error) {
-        setHasSubscription(false);
-      }
-    };
-
-    if (user?._id) {
-      checkSubscription();
-    }
-  }, [user?._id]);
-
+  const { data: hasSubscription = false } = useHasActiveSubscription();
   const { data: meals = [] } = useMeals(user?._id || null);
   const { data: dailyStats } = useDailyStats(user?._id || null);
   const uploadMealMutation = useUploadMeal();

@@ -5,6 +5,7 @@ import {
   UserSubscription,
   IUserSubscription,
 } from "../models/UserSubscription.js";
+import { User } from "../models/User.js";
 
 dayjs.extend(utc);
 
@@ -62,6 +63,11 @@ class SubscriptionService {
   }
 
   async hasActiveSubscription(userId: string): Promise<boolean> {
+    const user = await User.findById(userId);
+    if (!user) return false;
+
+    if (user.isAdmin) return true;
+
     const subscription = await UserSubscription.findOne({
       userId,
       isActive: true,

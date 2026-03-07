@@ -11,6 +11,7 @@ export interface User {
   height: number;
   workoutFrequency: number;
   goal: "lose" | "maintain" | "gain";
+  isAdmin: boolean;
 }
 
 export interface CalorieTarget {

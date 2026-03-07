@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { UserSubscription } from "../models/UserSubscription.js";
 import base64 from "base-64";
+import { User } from "../models/User.js";
 
 export interface AuthRequest extends Request {
   user?: {
@@ -48,6 +49,13 @@ export const subscriptionRequiredMiddleware = async (
     if (!userId) {
       return res.status(401).json({ error: "Foydalanuvchi ID topilmadi" });
     }
+
+    const user = await User.findById(userId).select("isAdmin");
+    if (!user) {
+      return res.status(401).json({ error: "Foydalanuvchi topilmadi" });
+    }
+
+    if (user.isAdmin) return next();
 
     const activeSubscription = await UserSubscription.findOne({
       userId,

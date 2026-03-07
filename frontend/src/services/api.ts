@@ -31,6 +31,14 @@ export const userAPI = {
     api.patch(`/users/${userId}/weight`, { weight }),
   getUserWithTelegramId: (telegramId: string) =>
     api.get(`/users/telegram/${telegramId}`),
+  getAllUsers: (page: number = 1, limit: number = 10) =>
+    api.get("/admin/users/all", { params: { page, limit } }),
+  toggleUserAdmin: (userId: string, isAdmin: boolean) =>
+    api.patch(`/admin/users/${userId}/toggle-admin`, { isAdmin }),
+  deleteUser: (userId: string) => api.delete(`/admin/users/${userId}`),
+  getAdminStats: () => api.get("/admin/stats"),
+  getAdminPayments: (days: number = 30, page: number = 1, limit: number = 10) =>
+    api.get("/admin/payments", { params: { days, page, limit } }),
 };
 
 export const mealAPI = {
@@ -70,6 +78,8 @@ export const subscriptionAPI = {
     api.post("/subscriptions/orders", { subscriptionId }),
   getOrder: (orderId: string) => api.get(`/subscriptions/orders/${orderId}`),
   getUserOrders: () => api.get("/subscriptions/user/orders"),
+  getAllOrders: (page: number = 1, limit: number = 10) =>
+    api.get("/admin/orders/all", { params: { page, limit } }),
 };
 
 export const paymentAPI = {

@@ -8,6 +8,7 @@ import mealRoutes from "./routes/mealRoutes.js";
 import statsRoutes from "./routes/statsRoutes.js";
 import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 import { setupTelegramBot } from "./telegram/bot.js";
 
 const app = express();
@@ -43,6 +44,7 @@ app.use("/api/meals", mealRoutes);
 app.use("/api/stats", statsRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.get("/health", (req, res) => {
   res.json({ status: "ok" });

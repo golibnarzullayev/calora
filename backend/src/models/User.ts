@@ -11,6 +11,7 @@ export interface IUser extends Document {
   height: number;
   workoutFrequency: number;
   goal: "lose" | "maintain" | "gain";
+  isAdmin: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -67,6 +68,10 @@ const userSchema = new Schema<IUser>(
       type: String,
       enum: ["lose", "maintain", "gain"],
       required: true,
+    },
+    isAdmin: {
+      type: Boolean,
+      default: false,
     },
   },
   {

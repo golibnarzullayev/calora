@@ -8,54 +8,71 @@ const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
 export class AuthController {
   static async register(req: Request, res: Response) {
-  try {
-    const {
-      firstName,
-      lastName,
-      phoneNumber,
-      password,
-      age,
-      weight,
-      height,
-      workoutFrequency,
-      goal,
-    } = req.body;
-
-    if (!firstName || !lastName || !phoneNumber || !password) {
-      return res
-        .status(400)
-        .json({ error: "Majburiy maydonlarni to'ldiring" });
-    }
-
-    let user = await User.findOne({ phoneNumber });
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    if (user) {
-      // Agar user bor lekin password yo'q bo'lsa -> update qilamiz
-      if (!user.password) {
-        user.firstName = firstName;
-        user.lastName = lastName;
-        user.password = hashedPassword;
-        user.age = age;
-        user.weight = weight;
-        user.height = height;
-        user.workoutFrequency = workoutFrequency;
-        user.goal = goal;
-
-        await user.save();
-      } else {
-        return res.status(400).json({
-          error: "Bu telefon raqami bilan foydalanuvchi allaqachon mavjud",
-        });
-      }
-    } else {
-      // Yangi user yaratish
-      user = new User({
+    try {
+      const {
         firstName,
         lastName,
         phoneNumber,
-        password: hashedPassword,
+        password,
+        age,
+        weight,
+        height,
+        workoutFrequency,
+        goal,
+      } = req.body;
+
+      if (!firstName || !lastName || !phoneNumber || !password) {
+        return res
+          .status(400)
+          .json({ error: "Majburiy maydonlarni to'ldiring" });
+      }
+
+      let user = await User.findOne({ phoneNumber });
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      if (user) {
+        // Agar user bor lekin password yo'q bo'lsa -> update qilamiz
+        if (!user.password) {
+          user.firstName = firstName;
+          user.lastName = lastName;
+          user.password = hashedPassword;
+          user.age = age;
+          user.weight = weight;
+          user.height = height;
+          user.workoutFrequency = workoutFrequency;
+          user.goal = goal;
+
+          await user.save();
+        } else {
+          return res.status(400).json({
+            error: "Bu telefon raqami bilan foydalanuvchi allaqachon mavjud",
+          });
+        }
+      } else {
+        // Yangi user yaratish
+        user = new User({
+          firstName,
+          lastName,
+          phoneNumber,
+          password: hashedPassword,
+          age,
+          weight,
+          height,
+          workoutFrequency,
+          goal,
+        });
+
+        await user.save();
+      }
+
+      const token = jwt.sign(
+        { userId: user._id, phoneNumber: user.phoneNumber },
+        JWT_SECRET,
+        { expiresIn: "30d" },
+      );
+
+      const calorieResult = CalorieCalculator.calculate({
         age,
         weight,
         height,
@@ -63,45 +80,28 @@ export class AuthController {
         goal,
       });
 
-      await user.save();
+      res.json({
+        token,
+        user: {
+          _id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          phoneNumber: user.phoneNumber,
+          age: user.age,
+          weight: user.weight,
+          height: user.height,
+          workoutFrequency: user.workoutFrequency,
+          goal: user.goal,
+        },
+        calorieTarget: calorieResult,
+      });
+    } catch (error) {
+      console.error("Registration error:", error);
+      res
+        .status(500)
+        .json({ error: "Foydalanuvchini ro'yxatdan o'tkazishda xato" });
     }
-
-    const token = jwt.sign(
-      { userId: user._id, phoneNumber: user.phoneNumber },
-      JWT_SECRET,
-      { expiresIn: "30d" }
-    );
-
-    const calorieResult = CalorieCalculator.calculate({
-      age,
-      weight,
-      height,
-      workoutFrequency,
-      goal,
-    });
-
-    res.json({
-      token,
-      user: {
-        _id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        phoneNumber: user.phoneNumber,
-        age: user.age,
-        weight: user.weight,
-        height: user.height,
-        workoutFrequency: user.workoutFrequency,
-        goal: user.goal,
-      },
-      calorieTarget: calorieResult,
-    });
-  } catch (error) {
-    console.error("Registration error:", error);
-    res
-      .status(500)
-      .json({ error: "Foydalanuvchini ro'yxatdan o'tkazishda xato" });
   }
-}
 
   static async login(req: Request, res: Response) {
     try {
@@ -143,17 +143,7 @@ export class AuthController {
 
       res.json({
         token,
-        user: {
-          _id: user._id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          phoneNumber: user.phoneNumber,
-          age: user.age,
-          weight: user.weight,
-          height: user.height,
-          workoutFrequency: user.workoutFrequency,
-          goal: user.goal,
-        },
+        user: user.toObject(),
         calorieTarget: calorieResult,
       });
     } catch (error) {
@@ -185,17 +175,7 @@ export class AuthController {
       });
 
       res.json({
-        user: {
-          _id: user._id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          phoneNumber: user.phoneNumber,
-          age: user.age,
-          weight: user.weight,
-          height: user.height,
-          workoutFrequency: user.workoutFrequency,
-          goal: user.goal,
-        },
+        user: user.toObject(),
         calorieTarget: calorieResult,
       });
     } catch (error) {

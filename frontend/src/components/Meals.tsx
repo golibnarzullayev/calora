@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useAppStore } from "../store/useAppStore";
-import { mealAPI, subscriptionAPI } from "../services/api";
-import { UZ } from "../constants/uz";
-import { Trash2, Upload, Camera, ChevronRight } from "lucide-react";
-import { useMeals, useRefreshMeals } from "../hooks/useMeals";
 import { useToast } from "../context/ToastContext";
+import { Lock, Plus, Trash2, Camera, Upload, ChevronRight } from "lucide-react";
+import {
+  useMeals,
+  useUploadMeal,
+  useDeleteMeal,
+  useHasActiveSubscription,
+} from "../hooks/useQueries";
 import { formatDateWithTime } from "../utils/dateFormatter";
 import { getErrorMessage } from "../utils/errorHandler";
+import { UZ } from "../constants/uz";
 import type { Meal } from "../store/useAppStore";
 
 interface MealsProps {
@@ -20,29 +24,14 @@ export const Meals: React.FC<MealsProps> = ({
 }) => {
   const { user } = useAppStore();
   const { success: showSuccess, error: showError } = useToast();
-  const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>("");
-  const [hasSubscription, setHasSubscription] = useState<boolean | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const { data: meals = [] } = useMeals(user?._id || null);
-  const refreshMeals = useRefreshMeals();
-
-  useEffect(() => {
-    const checkSubscription = async () => {
-      try {
-        const response = await subscriptionAPI.hasActiveSubscription();
-        setHasSubscription(response.data.hasActive);
-      } catch (error) {
-        setHasSubscription(false);
-      }
-    };
-
-    if (user?._id) {
-      checkSubscription();
-    }
-  }, [user?._id]);
+  const { data: hasSubscription = false } = useHasActiveSubscription();
+  const uploadMealMutation = useUploadMeal();
+  const deleteMealMutation = useDeleteMeal();
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -65,15 +54,13 @@ export const Meals: React.FC<MealsProps> = ({
       return;
     }
 
-    setLoading(true);
     try {
       const formData = new FormData();
       formData.append("image", selectedFile);
 
-      await mealAPI.uploadMeal(user._id, formData);
+      await uploadMealMutation.mutateAsync({ userId: user._id, formData });
       setSelectedFile(null);
       setPreview("");
-      refreshMeals();
       showSuccess(UZ.success.mealAdded);
     } catch (error: any) {
       if (error?.response?.data?.requiresSubscription) {
@@ -83,15 +70,12 @@ export const Meals: React.FC<MealsProps> = ({
         const errorMsg = getErrorMessage(error);
         showError(errorMsg);
       }
-    } finally {
-      setLoading(false);
     }
   };
 
   const handleDelete = async (mealId: string) => {
     try {
-      await mealAPI.deleteMeal(mealId);
-      refreshMeals();
+      await deleteMealMutation.mutateAsync(mealId);
       showSuccess(UZ.success.mealDeleted);
     } catch (error) {
       const errorMsg = getErrorMessage(error);

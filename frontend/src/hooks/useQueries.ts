@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { userAPI, mealAPI, statsAPI } from "../services/api";
+import { userAPI, mealAPI, statsAPI, subscriptionAPI } from "../services/api";
 import { useAppStore } from "../store/useAppStore";
 import type { User, CalorieTarget, DailyStats } from "../store/useAppStore";
 
@@ -221,4 +221,182 @@ export const useRefreshStats = () => {
     queryClient.invalidateQueries({ queryKey: ["weeklyStats"] });
     queryClient.invalidateQueries({ queryKey: ["monthlyStats"] });
   };
+};
+
+// Subscription Queries
+export const useSubscriptions = () => {
+  return useQuery({
+    queryKey: ["subscriptions"],
+    queryFn: async () => {
+      const response = await subscriptionAPI.getAllSubscriptions();
+      return response.data;
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+};
+
+export const useUserActiveSubscription = () => {
+  return useQuery({
+    queryKey: ["userActiveSubscription"],
+    queryFn: async () => {
+      const response = await subscriptionAPI.getUserActiveSubscription();
+      return response.data;
+    },
+    staleTime: 1000 * 60 * 2, // 2 minutes
+  });
+};
+
+export const useHasActiveSubscription = () => {
+  return useQuery({
+    queryKey: ["hasActiveSubscription"],
+    queryFn: async () => {
+      const response = await subscriptionAPI.hasActiveSubscription();
+      return response.data.hasActive;
+    },
+    staleTime: 1000 * 60, // 1 minute
+  });
+};
+
+export const useCreateSubscriptionOrder = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (subscriptionId: string) =>
+      subscriptionAPI.createOrder(subscriptionId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userActiveSubscription"] });
+      queryClient.invalidateQueries({ queryKey: ["hasActiveSubscription"] });
+    },
+  });
+};
+
+// Admin Queries
+export interface AdminUser {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  age: number;
+  weight: number;
+  height: number;
+  isAdmin: boolean;
+  createdAt: string;
+}
+
+export interface AdminOrder {
+  _id: string;
+  userId: {
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+  };
+  subscriptionId: {
+    name: string;
+    price: number;
+  };
+  amount: number;
+  status: "pending" | "paid" | "cancelled";
+  createdAt: string;
+}
+
+export interface AdminStats {
+  totalUsers: number;
+  totalOrders: number;
+  totalRevenue: number;
+  paidOrders: number;
+  pendingOrders: number;
+  adminUsers: number;
+  activeSubscriptions: number;
+  monthlyRevenue: number;
+}
+
+export interface AdminPayment {
+  _id: string;
+  orderId: string;
+  userId: {
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+  };
+  amount: number;
+  status: "pending" | "completed" | "failed";
+  paymentMethod: string;
+  transactionId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const useAllUsers = (page: number = 1, limit: number = 10) => {
+  return useQuery<PaginatedResponse<AdminUser>>({
+    queryKey: ["adminUsers", page, limit],
+    queryFn: async () => {
+      const response = await userAPI.getAllUsers(page, limit);
+      return response.data;
+    },
+  });
+};
+
+export const useAllOrders = (page: number = 1, limit: number = 10) => {
+  return useQuery<PaginatedResponse<AdminOrder>>({
+    queryKey: ["adminOrders", page, limit],
+    queryFn: async () => {
+      const response = await subscriptionAPI.getAllOrders(page, limit);
+      return response.data;
+    },
+  });
+};
+
+export const useAdminStats = () => {
+  return useQuery<AdminStats>({
+    queryKey: ["adminStats"],
+    queryFn: async () => {
+      const response = await userAPI.getAdminStats();
+      return response.data;
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+};
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
+
+export const useAdminPayments = (
+  days: number = 30,
+  page: number = 1,
+  limit: number = 10,
+) => {
+  return useQuery<PaginatedResponse<AdminPayment>>({
+    queryKey: ["adminPayments", days, page, limit],
+    queryFn: async () => {
+      const response = await userAPI.getAdminPayments(days, page, limit);
+      return response.data;
+    },
+  });
+};
+
+export const useToggleUserAdmin = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ userId, isAdmin }: { userId: string; isAdmin: boolean }) =>
+      userAPI.toggleUserAdmin(userId, isAdmin),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["adminUsers"] });
+    },
+  });
+};
+
+export const useDeleteUser = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (userId: string) => userAPI.deleteUser(userId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["adminUsers"] });
+    },
+  });
 };

@@ -11,6 +11,7 @@ import { PaymentCallback } from "./components/PaymentCallback";
 import { MealDetail } from "./components/MealDetail";
 import { Navigation } from "./components/Navigation";
 import { ToastContainer } from "./components/Toast";
+import AdminPanel from "./components/AdminPanel";
 import { authAPI, userAPI } from "./services/api";
 import type { Meal } from "./store/useAppStore";
 import { useToast } from "./context/ToastContext";
@@ -36,6 +37,7 @@ export const App: React.FC = () => {
     | "profile"
     | "subscriptions"
     | "payment-callback"
+    | "admin"
   >("dashboard");
 
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
@@ -169,9 +171,20 @@ export const App: React.FC = () => {
         {currentPage === "profile" && <Profile />}
 
         {currentPage === "subscriptions" && <Subscriptions />}
+
+        {currentPage === "admin" && (
+          <AdminPanel
+            onLogout={() => {
+              localStorage.removeItem("authToken");
+              setCurrentPage("dashboard");
+            }}
+          />
+        )}
       </main>
 
-      <Navigation currentPage={currentPage} onPageChange={setCurrentPage} />
+      {currentPage !== "admin" && (
+        <Navigation currentPage={currentPage} onPageChange={setCurrentPage} />
+      )}
 
       <ToastContainer toasts={toasts} onClose={removeToast} />
     </div>

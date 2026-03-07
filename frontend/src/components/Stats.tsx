@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useAppStore } from "../store/useAppStore";
+import { Activity, Droplets, Flame, Lock, Zap } from "lucide-react";
 import { UZ } from "../constants/uz";
-import { Flame, Zap, Droplets, Activity, Lock } from "lucide-react";
 import {
   useDailyStats,
-  useMonthlyStats,
   useWeeklyStats,
+  useMonthlyStats,
+  useHasActiveSubscription,
 } from "../hooks/useQueries";
-import { subscriptionAPI } from "../services/api";
 
 interface StatsProps {
   onNavigateToSubscriptions?: () => void;
@@ -15,25 +15,7 @@ interface StatsProps {
 
 export const Stats: React.FC<StatsProps> = ({ onNavigateToSubscriptions }) => {
   const { user } = useAppStore();
-  const [hasSubscription, setHasSubscription] = useState<boolean | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const checkSubscription = async () => {
-      try {
-        const response = await subscriptionAPI.hasActiveSubscription();
-        setHasSubscription(response.data.hasActive);
-      } catch (error) {
-        setHasSubscription(false);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (user?._id) {
-      checkSubscription();
-    }
-  }, [user?._id]);
+  const { data: hasSubscription = false } = useHasActiveSubscription();
   const [timeframe, setTimeframe] = useState<"today" | "week" | "month">(
     "today",
   );
@@ -95,14 +77,6 @@ export const Stats: React.FC<StatsProps> = ({ onNavigateToSubscriptions }) => {
     (timeframe === "today" && dailyLoading) ||
     (timeframe === "week" && weeklyLoading) ||
     (timeframe === "month" && monthlyLoading);
-
-  if (loading) {
-    return (
-      <div className="h-full flex items-center justify-center bg-gradient-to-b from-white via-blue-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
 
   if (!hasSubscription) {
     return (
