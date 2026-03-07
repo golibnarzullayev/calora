@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useAppStore } from "../store/useAppStore";
 import { useToast } from "../context/ToastContext";
-import { Lock, Plus, Trash2, Camera, Upload, ChevronRight } from "lucide-react";
+import { Trash2, Camera, Upload, ChevronRight } from "lucide-react";
 import {
   useMeals,
   useUploadMeal,
