@@ -48,11 +48,16 @@ export const Subscriptions: React.FC = () => {
       const order = response.data as OrderResponse;
 
       if (order.paymeUrl) {
-        localStorage.setItem("paymeOrder", JSON.stringify(order));
-        window.location.href = order.paymeUrl;
-      } else {
-        showError("Payme URL yaratilmadi");
-      }
+  localStorage.setItem("paymeOrder", JSON.stringify(order));
+
+  if (window.Telegram?.WebApp) {
+    window.Telegram.WebApp.openLink(order.paymeUrl);
+  } else {
+    window.open(order.paymeUrl, "_blank");
+  }
+} else {
+  showError("Payme URL yaratilmadi");
+}
     } catch (err: any) {
       showError(
         err.response?.data?.error || "Buyurtma yaratishda xatolik yuz berdi",
