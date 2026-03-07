@@ -154,11 +154,13 @@ export const Meals: React.FC<MealsProps> = ({
                 </button>
                 <button
                   onClick={handleUpload}
-                  disabled={loading}
+                  disabled={uploadMealMutation.isPending}
                   className="flex-1 px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-semibold text-sm hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
                 >
                   <Upload size={16} />
-                  {loading ? UZ.common.loading : UZ.meals.uploadImage}
+                  {uploadMealMutation.isPending
+                    ? UZ.common.loading
+                    : UZ.meals.uploadImage}
                 </button>
               </div>
             </div>
@@ -243,7 +245,7 @@ export const Meals: React.FC<MealsProps> = ({
                         e.stopPropagation();
                         handleDelete(meal._id);
                       }}
-                      disabled={loading}
+                      disabled={deleteMealMutation.isPending}
                       className="w-full mt-3 px-3 py-2 bg-red-50 dark:bg-red-900 text-red-600 dark:text-red-400 rounded-lg font-semibold text-xs hover:bg-red-100 dark:hover:bg-red-900 transition-all flex items-center justify-center gap-1"
                     >
                       <Trash2 size={14} />
