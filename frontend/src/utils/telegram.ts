@@ -6,32 +6,33 @@ export function getTelegramUser() {
   return window.Telegram?.WebApp?.initDataUnsafe?.user;
 }
 
-export function initTelegramWebApp() {
-  const webApp = getTelegramWebApp();
-  if (webApp) {
-    webApp.ready();
-    webApp.expand();
-  }
-}
+export const initTelegramWebApp = () => {
+  if (window.Telegram?.WebApp) {
+    const tg = window.Telegram.WebApp;
 
-export function getTelegramUserId(): string | null {
-  const user = getTelegramUser();
-  if (user?.id) {
-    return user.id.toString();
+    tg.ready();
+    tg.expand();
   }
+};
+
+export const getTelegramUserId = () => {
+  if (window.Telegram?.WebApp?.initDataUnsafe?.user?.id) {
+    return String(window.Telegram.WebApp.initDataUnsafe.user.id);
+  }
+
   return null;
-}
+};
 
-export function showTelegramAlert(message: string) {
+export const showTelegramAlert = (message: string) => {
   const webApp = getTelegramWebApp();
   if (webApp) {
     webApp.showAlert(message);
   } else {
     alert(message);
   }
-}
+};
 
-export function showTelegramConfirm(message: string): Promise<boolean> {
+export const showTelegramConfirm = (message: string): Promise<boolean> => {
   return new Promise((resolve) => {
     const webApp = getTelegramWebApp();
     if (webApp) {
@@ -40,9 +41,11 @@ export function showTelegramConfirm(message: string): Promise<boolean> {
       resolve(confirm(message));
     }
   });
-}
+};
 
-export function hapticFeedback(type: "impact" | "notification" | "selection") {
+export const hapticFeedback = (
+  type: "impact" | "notification" | "selection",
+) => {
   const webApp = getTelegramWebApp();
   if (webApp?.HapticFeedback) {
     if (type === "impact") {
@@ -53,4 +56,4 @@ export function hapticFeedback(type: "impact" | "notification" | "selection") {
       webApp.HapticFeedback.selectionChanged();
     }
   }
-}
+};

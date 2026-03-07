@@ -23,10 +23,12 @@ export const App: React.FC = () => {
     setCalorieTarget,
     setOnboarded,
   } = useAppStore();
+
   const { toasts, removeToast } = useToast();
 
   const [telegramId, setTelegramId] = useState<string | null>(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
   const [currentPage, setCurrentPage] = useState<
     | "dashboard"
     | "meals"
@@ -35,55 +37,65 @@ export const App: React.FC = () => {
     | "subscriptions"
     | "payment-callback"
   >("dashboard");
-  const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
 
-  const isLoading = !storeUser && telegramId;
+  const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // Check if on payment callback page
         if (window.location.pathname === "/payment-callback") {
           setCurrentPage("payment-callback");
-          setIsCheckingAuth(false);
           return;
         }
 
-        // Check if user has web auth token
+        // Telegram WebApp init
+        initTelegramWebApp();
+
+        if (window.Telegram?.WebApp) {
+          window.Telegram.WebApp.ready();
+        }
+
+        // 1️⃣ Web token orqali auth tekshirish
         const token = localStorage.getItem("authToken");
+
         if (token) {
           try {
             const response = await authAPI.verifyToken();
-            if (response.data.user && response.data.calorieTarget) {
+
+            if (response.data.user) {
               setUser(response.data.user);
               setCalorieTarget(response.data.calorieTarget);
               setOnboarded(true);
               return;
             }
-          } catch (error) {
+          } catch {
             localStorage.removeItem("authToken");
           }
         }
 
-        // Check for Telegram
-        initTelegramWebApp();
+        // 2️⃣ Telegram orqali auth
         const id = getTelegramUserId();
+
         if (id) {
           setTelegramId(id);
 
           try {
             const response = await userAPI.getUserWithTelegramId(id);
-            if (response.data.user && response.data.calorieTarget) {
+
+            if (response.data.user) {
               setUser(response.data.user);
               setCalorieTarget(response.data.calorieTarget);
               setOnboarded(true);
-              localStorage.setItem("authToken", response.data.token);
+
+              if (response.data.token) {
+                localStorage.setItem("authToken", response.data.token);
+              }
+
               return;
             }
-          } catch (error) {
-            localStorage.removeItem("authToken");
+          } catch {
+            console.error("Telegram auth failed");
           }
-          return;
         }
       } finally {
         setIsCheckingAuth(false);
@@ -93,7 +105,7 @@ export const App: React.FC = () => {
     checkAuth();
   }, [setUser, setCalorieTarget, setOnboarded]);
 
-  if (isCheckingAuth || isLoading) {
+  if (isCheckingAuth) {
     return (
       <div className="h-screen bg-gradient-to-b from-blue-500 to-blue-600 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center overflow-hidden">
         <div className="text-white text-center">
@@ -140,18 +152,22 @@ export const App: React.FC = () => {
             onNavigateToSubscriptions={() => setCurrentPage("subscriptions")}
           />
         )}
+
         {currentPage === "meals" && (
           <Meals
             onMealClick={setSelectedMeal}
             onNavigateToSubscriptions={() => setCurrentPage("subscriptions")}
           />
         )}
+
         {currentPage === "stats" && (
           <Stats
             onNavigateToSubscriptions={() => setCurrentPage("subscriptions")}
           />
         )}
+
         {currentPage === "profile" && <Profile />}
+
         {currentPage === "subscriptions" && <Subscriptions />}
       </main>
 
