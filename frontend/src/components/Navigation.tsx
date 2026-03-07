@@ -20,7 +20,7 @@ export const Navigation: React.FC<NavigationProps> = ({
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 min-h-[72px] bg-gray-900 border-t border-gray-700 flex justify-around items-center z-50"
+      className="fixed bottom-0 left-0 right-0 min-h-[72px] dark:bg-gray-900 border-t border-gray-700 flex justify-around items-center z-50"
       style={{
         paddingBottom: "env(safe-area-inset-bottom)",
       }}
