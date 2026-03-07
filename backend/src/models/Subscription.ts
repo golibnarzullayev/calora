@@ -7,6 +7,7 @@ export interface ISubscription extends Document {
   duration: number;
   durationUnit: "month" | "year";
   isActive: boolean;
+  discount: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -40,6 +41,10 @@ const subscriptionSchema = new Schema<ISubscription>(
     isActive: {
       type: Boolean,
       default: true,
+    },
+    discount: {
+      type: Number,
+      default: 0,
     },
   },
   {

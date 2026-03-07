@@ -10,6 +10,7 @@ const subscriptionPlans = [
     duration: 1,
     durationUnit: "month" as const,
     isActive: true,
+    discount: 0,
   },
   {
     name: "Premium Yearly",
@@ -18,6 +19,7 @@ const subscriptionPlans = [
     duration: 1,
     durationUnit: "year" as const,
     isActive: true,
+    discount: 20,
   },
 ];
 
@@ -40,6 +42,7 @@ async function seedSubscriptions() {
       console.log(`   Narxi: ${sub.price.toLocaleString()} so'm`);
       console.log(`   Davomiyligi: ${sub.duration} ${sub.durationUnit}`);
       console.log(`   Tavsifi: ${sub.description}`);
+      console.log(`   Chegirma: ${sub.discount}%`);
     });
 
     console.log(`\n✨ Jami ${created.length} ta plan qo'shildi`);
