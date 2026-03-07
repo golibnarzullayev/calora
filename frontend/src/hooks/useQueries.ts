@@ -72,19 +72,28 @@ export const useMealsByDate = (userId: string | null, date: string) => {
 };
 
 // Stats Queries
-export const useDailyStats = (userId: string | null, date?: string) => {
+export const useDailyStats = (
+  userId: string | null,
+  timeframe: "today" | "week" | "month" = "today",
+) => {
   return useQuery({
-    queryKey: ["dailyStats", userId, date],
+    queryKey: ["dailyStats", userId],
     queryFn: async () => {
       if (!userId) return null;
-      const response = await statsAPI.getDailyStats(userId, date);
+      const response = await statsAPI.getDailyStats(
+        userId,
+        new Date().toISOString().split("T")[0],
+      );
       return response.data.stats as DailyStats;
     },
-    enabled: !!userId,
+    enabled: !!userId && timeframe === "today",
   });
 };
 
-export const useWeeklyStats = (userId: string | null) => {
+export const useWeeklyStats = (
+  userId: string | null,
+  timeframe: "today" | "week" | "month",
+) => {
   return useQuery({
     queryKey: ["weeklyStats", userId],
     queryFn: async () => {
@@ -92,11 +101,14 @@ export const useWeeklyStats = (userId: string | null) => {
       const response = await statsAPI.getWeeklyStats(userId);
       return response.data.stats || [];
     },
-    enabled: !!userId,
+    enabled: !!userId && timeframe === "week",
   });
 };
 
-export const useMonthlyStats = (userId: string | null) => {
+export const useMonthlyStats = (
+  userId: string | null,
+  timeframe: "today" | "week" | "month",
+) => {
   return useQuery({
     queryKey: ["monthlyStats", userId],
     queryFn: async () => {
@@ -104,7 +116,7 @@ export const useMonthlyStats = (userId: string | null) => {
       const response = await statsAPI.getMonthlyStats(userId);
       return response.data.stats || [];
     },
-    enabled: !!userId,
+    enabled: !!userId && timeframe === "month",
   });
 };
 

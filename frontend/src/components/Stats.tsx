@@ -2,7 +2,11 @@ import React, { useState } from "react";
 import { useAppStore } from "../store/useAppStore";
 import { UZ } from "../constants/uz";
 import { Flame, Zap, Droplets, Activity } from "lucide-react";
-import { useDailyStats } from "../hooks/useQueries";
+import {
+  useDailyStats,
+  useMonthlyStats,
+  useWeeklyStats,
+} from "../hooks/useQueries";
 
 export const Stats: React.FC = () => {
   const { user } = useAppStore();
@@ -10,23 +14,63 @@ export const Stats: React.FC = () => {
     "today",
   );
 
-  const { data: dailyStatsData } = useDailyStats(user?._id || null);
+  const { data: dailyStatsData, isFetching: dailyLoading } = useDailyStats(
+    user?._id || null,
+    timeframe,
+  );
+  const { data: weeklyStatsData, isFetching: weeklyLoading } = useWeeklyStats(
+    user?._id || null,
+    timeframe,
+  );
+  const { data: monthlyStatsData, isFetching: monthlyLoading } =
+    useMonthlyStats(user?._id || null, timeframe);
+
+  const statsData = React.useMemo(() => {
+    if (timeframe === "today") return dailyStatsData;
+
+    const source = timeframe === "week" ? weeklyStatsData : monthlyStatsData;
+
+    if (!source) return null;
+
+    return source.reduce(
+      (acc: any, item: any) => ({
+        totalCalories: acc.totalCalories + item.totalCalories,
+        totalProtein: acc.totalProtein + item.totalProtein,
+        totalCarbs: acc.totalCarbs + item.totalCarbs,
+        totalFat: acc.totalFat + item.totalFat,
+        mealCount: acc.mealCount + item.mealCount,
+      }),
+      {
+        totalCalories: 0,
+        totalProtein: 0,
+        totalCarbs: 0,
+        totalFat: 0,
+        mealCount: 0,
+      },
+    );
+  }, [timeframe, dailyStatsData, weeklyStatsData, monthlyStatsData]);
 
   const getMacroPercentages = () => {
-    if (!dailyStatsData) return { protein: 0, carbs: 0, fat: 0 };
+    if (!statsData) return { protein: 0, carbs: 0, fat: 0 };
+
     const total =
-      dailyStatsData.totalProtein +
-      dailyStatsData.totalCarbs +
-      dailyStatsData.totalFat;
+      statsData.totalProtein + statsData.totalCarbs + statsData.totalFat;
+
     if (total === 0) return { protein: 0, carbs: 0, fat: 0 };
+
     return {
-      protein: Math.round((dailyStatsData.totalProtein / total) * 100),
-      carbs: Math.round((dailyStatsData.totalCarbs / total) * 100),
-      fat: Math.round((dailyStatsData.totalFat / total) * 100),
+      protein: Math.round((statsData.totalProtein / total) * 100),
+      carbs: Math.round((statsData.totalCarbs / total) * 100),
+      fat: Math.round((statsData.totalFat / total) * 100),
     };
   };
 
   const macroPercentages = getMacroPercentages();
+
+  const isLoading =
+    (timeframe === "today" && dailyLoading) ||
+    (timeframe === "week" && weeklyLoading) ||
+    (timeframe === "month" && monthlyLoading);
 
   return (
     <div className="bg-gradient-to-b from-white via-blue-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 h-full overflow-y-auto overflow-x-hidden">
@@ -67,80 +111,63 @@ export const Stats: React.FC = () => {
         </div>
 
         {/* Main Stats Card */}
-        {dailyStatsData && (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 mb-6 border border-gray-200 dark:border-gray-700 shadow-sm">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <p className="text-gray-600 dark:text-gray-400 text-sm mb-1">
-                  {UZ.stats.totalCalories}
-                </p>
-                <p className="text-5xl font-black text-gray-900 dark:text-white">
-                  {dailyStatsData.totalCalories}
-                </p>
-                <p className="text-blue-600 dark:text-blue-400 text-xs mt-1 font-semibold">
-                  kkal
-                </p>
-              </div>
-              <div className="bg-gradient-to-br from-orange-400 to-amber-500 p-4 rounded-2xl">
-                <Flame size={32} className="text-white" />
-              </div>
-            </div>
-
-            {/* Macro Breakdown */}
-            <div className="grid grid-cols-3 gap-3">
-              <MacroCard
-                icon={<Zap size={20} />}
-                label={UZ.meals.protein}
-                value={dailyStatsData.totalProtein}
-                unit="g"
-                percentage={macroPercentages.protein}
-                color="from-yellow-400 to-yellow-500"
-                bgColor="bg-yellow-50"
-              />
-              <MacroCard
-                icon={<Activity size={20} />}
-                label={UZ.meals.carbs}
-                value={dailyStatsData.totalCarbs}
-                unit="g"
-                percentage={macroPercentages.carbs}
-                color="from-blue-400 to-blue-500"
-                bgColor="bg-blue-50"
-              />
-              <MacroCard
-                icon={<Droplets size={20} />}
-                label={UZ.meals.fat}
-                value={dailyStatsData.totalFat}
-                unit="g"
-                percentage={macroPercentages.fat}
-                color="from-green-400 to-green-500"
-                bgColor="bg-green-50"
-              />
-            </div>
+        {isLoading ? (
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-200 dark:border-gray-700 shadow-sm flex justify-center">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
           </div>
+        ) : (
+          statsData && (
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 mb-6 border border-gray-200 dark:border-gray-700 shadow-sm">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-1">
+                    {UZ.stats.totalCalories}
+                  </p>
+                  <p className="text-5xl font-black text-gray-900 dark:text-white">
+                    {statsData.totalCalories}
+                  </p>
+                  <p className="text-blue-600 dark:text-blue-400 text-xs mt-1 font-semibold">
+                    kkal
+                  </p>
+                </div>
+                <div className="bg-gradient-to-br from-orange-400 to-amber-500 p-4 rounded-2xl">
+                  <Flame size={32} className="text-white" />
+                </div>
+              </div>
+
+              {/* Macro Breakdown */}
+              <div className="grid grid-cols-3 gap-3">
+                <MacroCard
+                  icon={<Zap size={20} />}
+                  label={UZ.meals.protein}
+                  value={statsData.totalProtein}
+                  unit="g"
+                  percentage={macroPercentages.protein}
+                  color="from-yellow-400 to-yellow-500"
+                  bgColor="bg-yellow-50"
+                />
+                <MacroCard
+                  icon={<Activity size={20} />}
+                  label={UZ.meals.carbs}
+                  value={statsData.totalCarbs}
+                  unit="g"
+                  percentage={macroPercentages.carbs}
+                  color="from-blue-400 to-blue-500"
+                  bgColor="bg-blue-50"
+                />
+                <MacroCard
+                  icon={<Droplets size={20} />}
+                  label={UZ.meals.fat}
+                  value={statsData.totalFat}
+                  unit="g"
+                  percentage={macroPercentages.fat}
+                  color="from-green-400 to-green-500"
+                  bgColor="bg-green-50"
+                />
+              </div>
+            </div>
+          )
         )}
-
-        {/* Weight Info Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-            {UZ.stats.weightProgress}
-          </h2>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">
-                {UZ.stats.weight}
-              </p>
-              <p className="text-4xl font-black text-gray-900 dark:text-white">
-                {user?.weight}
-              </p>
-              <p className="text-blue-600 dark:text-blue-400 text-xs mt-1 font-semibold">
-                kg
-              </p>
-            </div>
-            <div className="bg-gradient-to-br from-cyan-400 to-blue-500 p-4 rounded-2xl">
-              <Activity size={32} className="text-white" />
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
