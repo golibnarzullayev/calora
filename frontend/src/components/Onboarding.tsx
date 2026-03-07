@@ -189,6 +189,21 @@ export const Onboarding: React.FC<{ telegramId: string | null }> = ({
     };
   }, []);
 
+  useEffect(() => {
+    const tg = window?.Telegram?.WebApp;
+
+    if (!tg) return;
+
+    tg.onEvent("contactRequested", (data: any) => {
+      if (data?.phone_number) {
+        setFormData((prev) => ({
+          ...prev,
+          phoneNumber: data.phone_number,
+        }));
+      }
+    });
+  }, []);
+
   return (
     <div className="h-screen bg-gradient-to-br from-blue-600 via-blue-500 to-purple-600 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col items-center justify-center px-4 py-2 relative overflow-hidden">
       {/* Animated background elements */}

@@ -3,14 +3,13 @@ import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "./context/ThemeContext";
 import { ToastProvider } from "./context/ToastContext";
+import "@twa-dev/types";
 import App from "./App";
 import "./index.css";
 
-// Prevent pull-to-refresh and native app-like behavior
 document.addEventListener(
   "touchmove",
   (e) => {
-    // Allow scrolling within scrollable containers
     if (
       e.target instanceof HTMLElement &&
       (e.target.closest("[data-scrollable]") ||
@@ -18,7 +17,6 @@ document.addEventListener(
     ) {
       return;
     }
-    // Prevent default pull-to-refresh
     if (e.touches.length > 1) {
       e.preventDefault();
     }
@@ -26,7 +24,6 @@ document.addEventListener(
   { passive: false },
 );
 
-// Prevent overscroll bounce on iOS
 document.addEventListener(
   "touchstart",
   (e) => {
@@ -44,8 +41,8 @@ document.addEventListener(
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      gcTime: 1000 * 60 * 10, // 10 minutes
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 10,
     },
   },
 });
