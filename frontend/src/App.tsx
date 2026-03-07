@@ -11,7 +11,6 @@ import { PaymentCallback } from "./components/PaymentCallback";
 import { MealDetail } from "./components/MealDetail";
 import { Navigation } from "./components/Navigation";
 import { ToastContainer } from "./components/Toast";
-import { useUser, useCalorieTarget } from "./hooks/useQueries";
 import { authAPI, userAPI } from "./services/api";
 import type { Meal } from "./store/useAppStore";
 import { useToast } from "./context/ToastContext";
@@ -38,10 +37,7 @@ export const App: React.FC = () => {
   >("dashboard");
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
 
-  const { data: user, isLoading: userLoading } = useUser(telegramId || null);
-  const { data: calorieTarget } = useCalorieTarget(telegramId || null);
-
-  const isLoading = userLoading && !user && telegramId;
+  const isLoading = !storeUser && telegramId;
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -96,14 +92,6 @@ export const App: React.FC = () => {
 
     checkAuth();
   }, [setUser, setCalorieTarget, setOnboarded]);
-
-  useEffect(() => {
-    if (user && calorieTarget) {
-      setUser(user);
-      setCalorieTarget(calorieTarget);
-      setOnboarded(true);
-    }
-  }, [user, calorieTarget, setUser, setCalorieTarget, setOnboarded]);
 
   if (isCheckingAuth || isLoading) {
     return (
