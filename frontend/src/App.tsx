@@ -146,7 +146,11 @@ export const App: React.FC = () => {
             onNavigateToSubscriptions={() => setCurrentPage("subscriptions")}
           />
         )}
-        {currentPage === "stats" && <Stats />}
+        {currentPage === "stats" && (
+          <Stats
+            onNavigateToSubscriptions={() => setCurrentPage("subscriptions")}
+          />
+        )}
         {currentPage === "profile" && <Profile />}
         {currentPage === "subscriptions" && <Subscriptions />}
       </main>
